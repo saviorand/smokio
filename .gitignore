@@ -1,0 +1,12 @@
+# pixi environments
+.pixi/*
+!.pixi/config.toml
+.kiro/*
+.vscode/*
+
+*.xml
+*.o
+*.s
+
+_archive**
+.DS_Store
