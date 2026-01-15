@@ -1,4 +1,8 @@
 from memory import UnsafePointer, alloc
+# Undocumented coroutine primitives from Mojo stdlib:
+# - AnyCoroutine: MLIR type (!co.routine) representing raw coroutine handle
+# - _coro_resume_fn: Resume a suspended coroutine from where it left off
+# - _suspend_async: Suspend current coroutine and call callback with its handle
 from builtin.coroutine import AnyCoroutine, _coro_resume_fn, _suspend_async
 from sys.ffi import external_call
 
@@ -91,8 +95,9 @@ fn kevent(
 
 @register_passable("trivial")
 struct AsyncTask:
-    var coro_handle: AnyCoroutine
-    var fd: Int32
+    """Pairs a suspended coroutine handle with the fd it's waiting on."""
+    var coro_handle: AnyCoroutine  # Raw handle to suspended coroutine
+    var fd: Int32                  # File descriptor this task is waiting to read
 
     fn __init__(out self, handle: AnyCoroutine, fd: Int32):
         self.coro_handle = handle
@@ -112,9 +117,11 @@ struct AsyncRuntime:
         self.max_tasks = max_tasks
 
     fn register_read(mut self, handle: AnyCoroutine, fd: Int32) -> Int:
+        """Register a suspended coroutine to be resumed when fd is readable."""
         if self.num_waiting >= self.max_tasks:
             return -1
 
+        # Add fd to kqueue with EVFILT_READ
         var ev_ptr = alloc[Kevent](1)
         ev_ptr[0].ident = fd.cast[DType.uint64]()
         ev_ptr[0].filter = EVFILT_READ
@@ -125,17 +132,20 @@ struct AsyncRuntime:
         ev_ptr.free()
         null_ptr.free()
 
+        # Store handle + fd pair for later resumption
         self.waiting_tasks[self.num_waiting] = AsyncTask(handle, fd)
         self.num_waiting += 1
         return self.num_waiting - 1
 
     fn run_once(mut self) -> Int:
+        """Wait for I/O events and resume ready coroutines."""
         if self.num_waiting == 0:
             return 0
 
         var events = alloc[Kevent](self.max_tasks)
         var null_ptr = alloc[Kevent](0)
 
+        # Block until at least one fd is ready
         var nev = kevent(self.kq, null_ptr, 0, events, Int32(self.max_tasks), 0)
         null_ptr.free()
 
@@ -145,6 +155,7 @@ struct AsyncRuntime:
 
         var resumed = 0
 
+        # For each ready fd, find and resume the waiting coroutine
         for i in range(Int(nev)):
             var ready_fd = events[i].ident.cast[DType.int32]()
 
@@ -152,8 +163,10 @@ struct AsyncRuntime:
             while j < self.num_waiting:
                 if self.waiting_tasks[j].fd == ready_fd:
                     puts("  [Runtime] fd " + String(ready_fd) + " is ready! Resuming task...")
+                    # Resume coroutine - continues execution after _suspend_async
                     _coro_resume_fn(self.waiting_tasks[j].coro_handle)
 
+                    # Remove from waiting list (shift remaining tasks down)
                     for k in range(j, self.num_waiting - 1):
                         self.waiting_tasks[k] = self.waiting_tasks[k + 1]
                     self.num_waiting -= 1
@@ -196,10 +209,12 @@ struct AsyncRead:
     fn __await__(mut self) -> Int:
         _ = set_nonblocking(self.fd)
 
+        # Try immediate read first
         var bytes = try_read(self.fd, self.buffer, self.size)
         if bytes >= 0:
             return bytes
 
+        # Check if we got EAGAIN (would block)
         var errno = external_call["__error", UnsafePointer[Int32, MutOrigin.external]]()
         comptime EAGAIN = 35
         if errno[] != EAGAIN:
@@ -207,13 +222,17 @@ struct AsyncRead:
 
         puts("  [AsyncRead] fd " + String(self.fd) + " not ready, suspending...")
 
+        # Suspend and register with kqueue
         @always_inline
         @parameter
         fn suspend_callback(cur_hdl: AnyCoroutine):
+            # This callback receives our suspended coroutine handle
             _ = self.runtime._ptr[].register_read(cur_hdl, self.fd)
 
+        # Suspend execution here - returns when runtime calls _coro_resume_fn
         _suspend_async[suspend_callback]()
 
+        # Execution resumes here when fd is ready
         puts("  [AsyncRead] fd " + String(self.fd) + " resumed, reading...")
         bytes = try_read(self.fd, self.buffer, self.size)
         return bytes
@@ -221,9 +240,14 @@ struct AsyncRead:
 
 @register_passable("trivial")
 struct _AsyncContext:
+    """Custom 16-byte context to override stdlib's async runtime behavior.
+
+    Mojo's Coroutine has a 16-byte context slot accessed via _get_ctx.
+    We use this to opt out of stdlib's completion callback mechanism.
+    """
     comptime callback_fn_type = fn () -> None
-    var callback: Self.callback_fn_type
-    var _padding: Int
+    var callback: Self.callback_fn_type  # 8 bytes
+    var _padding: Int                    # 8 bytes (total = 16 bytes required)
 
     fn __init__(out self, callback: Self.callback_fn_type):
         self.callback = callback
@@ -248,10 +272,20 @@ struct Smokio:
         return RuntimeHandle(ext_ptr)
 
     fn spawn[T: ImplicitlyDestructible, origins: OriginSet](mut self, var coro: Coroutine[T, origins]):
+        """Spawn a coroutine for manual execution in this runtime."""
+        # Allocate storage for coroutine's return value
         var result = alloc[T](1)
+
+        # Override context with no-op to bypass stdlib's asyncrt
         coro._get_ctx[_AsyncContext]()[] = _AsyncContext(_AsyncContext.no_op_callback)
+
+        # Tell coroutine where to write result on completion (by-reference return)
         coro._set_result_slot(result)
+
+        # Store raw handle for manual lifecycle management
         self._tasks.append(coro._handle)
+
+        # Transfer ownership to prevent automatic cleanup
         __mlir_op.`lit.ownership.mark_destroyed`(__get_mvalue_as_litref(coro))
 
 
@@ -280,9 +314,11 @@ fn main():
     var smokio = Smokio()
     var rt = smokio.runtime_handle()
 
+    # Spawn two async tasks
     smokio.spawn(read_pipe(rt, 1, pipe1.read_fd))
     smokio.spawn(read_pipe(rt, 2, pipe2.read_fd))
 
+    # Initial resume - each runs until first await
     for i in range(len(smokio._tasks)):
         _coro_resume_fn(smokio._tasks[i])
 
@@ -292,6 +328,7 @@ fn main():
     pipe1.send("Hello A")
     pipe2.send("World B")
 
+    # Event loop - wait for I/O and resume ready tasks
     var iterations = 0
     while runtime_ptr[].num_waiting > 0 and iterations < 10:
         _ = runtime_ptr[].run_once()
