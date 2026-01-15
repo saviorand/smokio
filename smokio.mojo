@@ -276,17 +276,26 @@ struct Smokio:
         # Allocate storage for coroutine's return value
         var result = alloc[T](1)
 
+        # Mark result as initialized - required by MLIR ownership system
+        __mlir_op.`lit.ownership.mark_initialized`(__get_mvalue_as_litref(result[]))
+
         # Override context with no-op to bypass stdlib's asyncrt
         coro._get_ctx[_AsyncContext]()[] = _AsyncContext(_AsyncContext.no_op_callback)
 
         # Tell coroutine where to write result on completion (by-reference return)
         coro._set_result_slot(result)
 
-        # Store raw handle for manual lifecycle management
-        self._tasks.append(coro._handle)
+        # Take ownership of coroutine handle
+        self._tasks.append(coro^._take_handle())
 
-        # Transfer ownership to prevent automatic cleanup
-        __mlir_op.`lit.ownership.mark_destroyed`(__get_mvalue_as_litref(coro))
+    fn __del__(deinit self):
+        """Cleanup all spawned tasks (destroy coroutine handles).
+
+        Uses co.destroy MLIR op following stdlib Coroutine.force_destroy pattern.
+        Note: result pointers are leaked - in production would need per-task cleanup.
+        """
+        for i in range(len(self._tasks)):
+            __mlir_op.`co.destroy`(self._tasks[i])
 
 
 # ===-----------------------------------------------------------------------===#
