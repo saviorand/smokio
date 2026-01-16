@@ -4,7 +4,18 @@ from memory import UnsafePointer, alloc
 # - _coro_resume_fn: Resume a suspended coroutine from where it left off
 # - _suspend_async: Suspend current coroutine and call callback with its handle
 from builtin.coroutine import AnyCoroutine, _coro_resume_fn, _suspend_async
-from sys.ffi import external_call
+from sys.ffi import external_call, c_int
+from smokio.kqueue import (
+    kqueue,
+    kevent,
+    _kevent,
+    Kevent,
+    Timespec,
+    EVFILT_READ,
+    EV_ADD,
+    EV_ENABLE,
+)
+from smokio.aliases import ExternalMutUnsafePointer
 
 
 # ===-----------------------------------------------------------------------===#
@@ -16,121 +27,122 @@ fn puts(var s: String):
     _ = external_call["puts", Int32](cstr.unsafe_ptr())
 
 
-fn set_nonblocking(fd: Int32) -> Bool:
+fn set_nonblocking(fd: c_int) -> Bool:
+    """Set a file descriptor to non-blocking mode using ioctl."""
     comptime FIONBIO = 0x8004667e
-    var nonblock = alloc[Int32](1)
+    var nonblock = alloc[c_int](1)
     nonblock[] = 1
-    var result = external_call["ioctl", Int, Int32, Int, UnsafePointer[Int32, MutOrigin.external]](fd, FIONBIO, nonblock)
+    var result = external_call["ioctl", Int, c_int, Int, ExternalMutUnsafePointer[c_int]](fd, FIONBIO, nonblock)
     nonblock.free()
     return result != -1
 
 
-fn try_read(fd: Int32, buffer: UnsafePointer[mut=True, UInt8, MutOrigin.external], size: Int) -> Int:
-    return external_call["read", Int, Int32, UnsafePointer[mut=True, UInt8, MutOrigin.external], UInt](fd, buffer, UInt(size))
+fn try_read(fd: c_int, buffer: ExternalMutUnsafePointer[UInt8], size: Int) -> Int:
+    """Attempt to read from a file descriptor without blocking."""
+    return external_call["read", Int, c_int, ExternalMutUnsafePointer[UInt8], UInt](fd, buffer, UInt(size))
 
 
 @fieldwise_init
 struct Pipe(Movable, Copyable):
-    var read_fd: Int32
-    var write_fd: Int32
+    """A simple pipe wrapper for IPC communication."""
+    var read_fd: c_int
+    var write_fd: c_int
 
     fn __init__(out self):
-        var fds = alloc[Int32](2)
-        _ = external_call["pipe", Int32, UnsafePointer[mut=True, Int32, MutOrigin.external]](fds)
+        """Create a new pipe and set the read end to non-blocking."""
+        var fds = alloc[c_int](2)
+        _ = external_call["pipe", c_int, ExternalMutUnsafePointer[c_int]](fds)
         self.read_fd = fds[0]
         self.write_fd = fds[1]
         fds.free()
         _ = set_nonblocking(self.read_fd)
 
     fn send(self, msg: String):
-        var ptr = UnsafePointer[mut=True, UInt8, MutOrigin.external](unsafe_from_address=Int(msg.unsafe_ptr()))
-        _ = external_call["write", Int, Int32, UnsafePointer[mut=True, UInt8, MutOrigin.external], Int](self.write_fd, ptr, len(msg))
+        """Send a string message through the pipe."""
+        var ptr = ExternalMutUnsafePointer[UInt8](unsafe_from_address=Int(msg.unsafe_ptr()))
+        _ = external_call["write", Int, c_int, ExternalMutUnsafePointer[UInt8], Int](self.write_fd, ptr, len(msg))
 
     fn close(self):
-        var close_fn = external_call["close", Int32, Int32]
+        """Close both ends of the pipe."""
+        var close_fn = external_call["close", c_int, c_int]
         _ = close_fn(self.read_fd)
         _ = close_fn(self.write_fd)
 
 
 # ===-----------------------------------------------------------------------===#
-# Runtime and kqueue
+# Runtime
 # ===-----------------------------------------------------------------------===#
-
-comptime EVFILT_READ = -1
-comptime EV_ADD = 0x0001
-comptime EV_ENABLE = 0x0004
-
-@register_passable("trivial")
-struct Kevent:
-    var ident: UInt64
-    var filter: Int16
-    var flags: UInt16
-    var fflags: UInt32
-    var data: Int64
-    var udata: UInt64
-
-    fn __init__(out self):
-        self.ident = 0
-        self.filter = 0
-        self.flags = 0
-        self.fflags = 0
-        self.data = 0
-        self.udata = 0
-
-
-fn kqueue() -> Int32:
-    return external_call["kqueue", Int32]()
-
-
-fn kevent(
-    kq: Int32,
-    changelist: UnsafePointer[mut=True, Kevent, MutOrigin.external],
-    nchanges: Int32,
-    eventlist: UnsafePointer[mut=True, Kevent, MutOrigin.external],
-    nevents: Int32,
-    timeout: UInt64
-) -> Int32:
-    return external_call["kevent", Int32, Int32, UnsafePointer[mut=True, Kevent, MutOrigin.external], Int32, UnsafePointer[mut=True, Kevent, MutOrigin.external], Int32, UInt64](kq, changelist, nchanges, eventlist, nevents, timeout)
 
 
 @register_passable("trivial")
 struct AsyncTask:
     """Pairs a suspended coroutine handle with the fd it's waiting on."""
     var coro_handle: AnyCoroutine  # Raw handle to suspended coroutine
-    var fd: Int32                  # File descriptor this task is waiting to read
+    var fd: c_int                  # File descriptor this task is waiting to read
 
-    fn __init__(out self, handle: AnyCoroutine, fd: Int32):
+    fn __init__(out self, handle: AnyCoroutine, fd: c_int):
         self.coro_handle = handle
         self.fd = fd
 
 
 struct AsyncRuntime:
-    var kq: Int32
-    var waiting_tasks: UnsafePointer[mut=True, AsyncTask, MutOrigin.external]
+    """Async runtime using kqueue for I/O event notification."""
+    var kq: c_int
+    var waiting_tasks: ExternalMutUnsafePointer[AsyncTask]
     var num_waiting: Int
     var max_tasks: Int
 
     fn __init__(out self, max_tasks: Int = 16):
-        self.kq = kqueue()
+        """Initialize runtime with kqueue and task storage.
+
+        Args:
+            max_tasks: Maximum number of concurrent tasks (default: 16).
+        """
+        try:
+            self.kq = kqueue()
+        except:
+            puts("Failed to create kqueue")
+            self.kq = -1
         self.waiting_tasks = alloc[AsyncTask](max_tasks)
         self.num_waiting = 0
         self.max_tasks = max_tasks
 
-    fn register_read(mut self, handle: AnyCoroutine, fd: Int32) -> Int:
-        """Register a suspended coroutine to be resumed when fd is readable."""
+    fn register_read(mut self, handle: AnyCoroutine, fd: c_int) -> Int:
+        """Register a suspended coroutine to be resumed when fd is readable.
+
+        Args:
+            handle: The coroutine handle to resume when fd is ready.
+            fd: The file descriptor to monitor for read events.
+
+        Returns:
+            The task index, or -1 on error.
+        """
         if self.num_waiting >= self.max_tasks:
             return -1
 
         # Add fd to kqueue with EVFILT_READ
-        var ev_ptr = alloc[Kevent](1)
-        ev_ptr[0].ident = fd.cast[DType.uint64]()
-        ev_ptr[0].filter = EVFILT_READ
-        ev_ptr[0].flags = EV_ADD | EV_ENABLE
+        var ev = Kevent(
+            ident=UInt64(fd),
+            filter=EVFILT_READ,
+            flags=EV_ADD | EV_ENABLE,
+        )
+        var ev_ptr = UnsafePointer(to=ev)
 
-        var null_ptr = alloc[Kevent](0)
-        _ = kevent(self.kq, ev_ptr, 1, null_ptr, 0, 0)
-        ev_ptr.free()
-        null_ptr.free()
+        # Use zero timeout for immediate return when registering
+        var timeout = alloc[Timespec](1)
+        timeout[] = Timespec(0, 0)
+
+        # Use raw _kevent to avoid raises clause - no eventlist needed for registration
+        var empty_eventlist = alloc[Kevent](0)
+        var result = _kevent(self.kq, ev_ptr, 1, empty_eventlist, 0, timeout)
+        empty_eventlist.free()
+        timeout.free()
+
+        if result == -1:
+            puts("Failed to register fd with kqueue")
+            return -1
+
+        puts("  [Runtime] Successfully registered fd " + String(fd))
 
         # Store handle + fd pair for later resumption
         self.waiting_tasks[self.num_waiting] = AsyncTask(handle, fd)
@@ -138,16 +150,34 @@ struct AsyncRuntime:
         return self.num_waiting - 1
 
     fn run_once(mut self) -> Int:
-        """Wait for I/O events and resume ready coroutines."""
+        """Wait for I/O events and resume ready coroutines.
+
+        Returns:
+            The number of coroutines resumed, or 0 if none ready.
+        """
         if self.num_waiting == 0:
+            puts("  [Runtime] run_once: no tasks waiting")
             return 0
 
-        var events = alloc[Kevent](self.max_tasks)
-        var null_ptr = alloc[Kevent](0)
+        puts("  [Runtime] run_once: waiting for events on " + String(self.num_waiting) + " fds")
 
-        # Block until at least one fd is ready
-        var nev = kevent(self.kq, null_ptr, 0, events, Int32(self.max_tasks), 0)
-        null_ptr.free()
+        var events = alloc[Kevent](self.max_tasks)
+
+        # Wait for events with a timeout to avoid hanging
+        var timeout = alloc[Timespec](1)
+        timeout[] = Timespec(1, 0)  # 1 second timeout
+        var nev: c_int
+        try:
+            puts("  [Runtime] Calling kevent...")
+            nev = kevent(self.kq, UnsafePointer[Kevent, origin=ImmutOrigin.external](), 0, events, c_int(self.max_tasks), rebind[UnsafePointer[Timespec, origin=ImmutOrigin.external]](timeout))
+            puts("  [Runtime] kevent returned " + String(nev) + " events")
+        except:
+            puts("kevent failed in run_once")
+            timeout.free()
+            events.free()
+            return 0
+
+        timeout.free()
 
         if nev <= 0:
             events.free()
@@ -157,7 +187,7 @@ struct AsyncRuntime:
 
         # For each ready fd, find and resume the waiting coroutine
         for i in range(Int(nev)):
-            var ready_fd = events[i].ident.cast[DType.int32]()
+            var ready_fd = c_int(events[i].ident)
 
             var j = 0
             while j < self.num_waiting:
@@ -179,27 +209,27 @@ struct AsyncRuntime:
 
     fn __del__(deinit self):
         if self.kq != -1:
-            _ = external_call["close", Int32, Int32](self.kq)
+            _ = external_call["close", c_int, c_int](self.kq)
         if self.waiting_tasks:
             self.waiting_tasks.free()
 
 
 @register_passable("trivial")
 struct RuntimeHandle:
-    var _ptr: UnsafePointer[mut=True, AsyncRuntime, MutOrigin.external]
+    var _ptr: ExternalMutUnsafePointer[AsyncRuntime]
 
-    fn __init__(out self, ptr: UnsafePointer[mut=True, AsyncRuntime, MutOrigin.external]):
+    fn __init__(out self, ptr: ExternalMutUnsafePointer[AsyncRuntime]):
         self._ptr = ptr
 
 
 struct AsyncRead:
     """Awaitable read that suspends until fd is readable."""
     var runtime: RuntimeHandle
-    var fd: Int32
-    var buffer: UnsafePointer[mut=True, UInt8, MutOrigin.external]
+    var fd: c_int
+    var buffer: ExternalMutUnsafePointer[UInt8]
     var size: Int
 
-    fn __init__(out self, runtime: RuntimeHandle, fd: Int32, buffer: UnsafePointer[mut=True, UInt8, MutOrigin.external], size: Int):
+    fn __init__(out self, runtime: RuntimeHandle, fd: c_int, buffer: ExternalMutUnsafePointer[UInt8], size: Int):
         self.runtime = runtime
         self.fd = fd
         self.buffer = buffer
@@ -215,7 +245,7 @@ struct AsyncRead:
             return bytes
 
         # Check if we got EAGAIN (would block)
-        var errno = external_call["__error", UnsafePointer[Int32, MutOrigin.external]]()
+        var errno = external_call["__error", ExternalMutUnsafePointer[c_int]]()
         comptime EAGAIN = 35
         if errno[] != EAGAIN:
             return -1
@@ -259,20 +289,31 @@ struct _AsyncContext:
 
 
 struct Smokio:
+    """Main async runtime coordinator for spawning and managing coroutines."""
     var _runtime: AsyncRuntime
     var _tasks: List[AnyCoroutine]
 
     fn __init__(out self):
+        """Initialize the Smokio runtime."""
         self._runtime = AsyncRuntime()
         self._tasks = List[AnyCoroutine]()
 
     fn runtime_handle(mut self) -> RuntimeHandle:
+        """Get a handle to the internal runtime for passing to async operations."""
         var ptr = UnsafePointer(to=self._runtime)
-        var ext_ptr = rebind[UnsafePointer[mut=True, AsyncRuntime, MutOrigin.external]](ptr)
+        var ext_ptr = rebind[ExternalMutUnsafePointer[AsyncRuntime]](ptr)
         return RuntimeHandle(ext_ptr)
 
     fn spawn[T: ImplicitlyDestructible, origins: OriginSet](mut self, var coro: Coroutine[T, origins]):
-        """Spawn a coroutine for manual execution in this runtime."""
+        """Spawn a coroutine for manual execution in this runtime.
+
+        Args:
+            coro: The coroutine to spawn and manage.
+
+        Notes:
+            The coroutine is detached from the stdlib async runtime and will be
+            manually resumed by this runtime's event loop.
+        """
         # Allocate storage for coroutine's return value
         var result = alloc[T](1)
 
@@ -302,7 +343,17 @@ struct Smokio:
 # Demo
 # ===-----------------------------------------------------------------------===#
 
-async fn read_pipe(rt: RuntimeHandle, pipe_id: Int, fd: Int32) -> Int:
+async fn read_pipe(rt: RuntimeHandle, pipe_id: Int, fd: c_int) -> Int:
+    """Demo async function that reads from a pipe.
+
+    Args:
+        rt: Runtime handle for async operations.
+        pipe_id: Identifier for logging.
+        fd: File descriptor to read from.
+
+    Returns:
+        Number of bytes read, or -1 on error.
+    """
     puts("Task " + String(pipe_id) + " starting")
 
     var buffer = alloc[UInt8](64)
@@ -315,33 +366,3 @@ async fn read_pipe(rt: RuntimeHandle, pipe_id: Int, fd: Int32) -> Int:
     buffer.free()
     return bytes
 
-
-fn main():
-    var pipe1 = Pipe()
-    var pipe2 = Pipe()
-
-    var smokio = Smokio()
-    var rt = smokio.runtime_handle()
-
-    # Spawn two async tasks
-    smokio.spawn(read_pipe(rt, 1, pipe1.read_fd))
-    smokio.spawn(read_pipe(rt, 2, pipe2.read_fd))
-
-    # Initial resume - each runs until first await
-    for i in range(len(smokio._tasks)):
-        _coro_resume_fn(smokio._tasks[i])
-
-    var runtime_ptr = UnsafePointer(to=smokio._runtime)
-
-    puts("\nSending data to pipes...\n")
-    pipe1.send("Hello A")
-    pipe2.send("World B")
-
-    # Event loop - wait for I/O and resume ready tasks
-    var iterations = 0
-    while runtime_ptr[].num_waiting > 0 and iterations < 10:
-        _ = runtime_ptr[].run_once()
-        iterations += 1
-
-    pipe1.close()
-    pipe2.close()
