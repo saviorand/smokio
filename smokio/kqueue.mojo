@@ -101,6 +101,10 @@ comptime NOTE_BACKGROUND = 0x00000020
 comptime NOTE_LEEWAY = 0x00000040
 """use leeway for timer coalescing"""
 
+# Filter-specific flags for EVFILT_USER
+comptime NOTE_TRIGGER = 0x01000000
+"""trigger the event"""
+
 
 # ===== KQUEUE ERROR STRUCTS =====
 
