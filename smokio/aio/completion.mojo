@@ -17,7 +17,7 @@ struct ReadResult(Copyable & Movable):
     var errno: Int
 
 @fieldwise_init
-struct WriteResult(Copyable & Movable):
+struct WriteResult(Copyable & Movable & ImplicitlyCopyable):
     """Result of a completed write operation."""
     var bytes_written: Int
     var errno: Int
@@ -42,7 +42,7 @@ comptime CompletionResult = Variant[
 ]
 
 @fieldwise_init
-struct Completion(Copyable & Movable):
+struct Completion(Copyable & Movable & ImplicitlyCopyable):
     """A completion returned by the async backend.
 
     Contains the task index that should be resumed,

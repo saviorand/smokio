@@ -32,7 +32,7 @@ comptime TaskState = Variant[
     WaitForIoState,
 ]
 
-struct Task(Copyable & Movable):
+struct Task(Copyable & Movable & ImplicitlyDestructible & Defaultable):
     """A task representing an async coroutine.
 
     Tasks move through states: Dead -> Runnable -> WaitForIo -> Runnable -> ...

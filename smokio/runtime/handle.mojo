@@ -10,7 +10,7 @@ from ..aio.backend import AsyncBackend
 from ..aio.submission import Submission
 from .runtime import Runtime
 
-struct RuntimeHandle[B: AsyncBackend](Copyable):
+struct RuntimeHandle[B: AsyncBackend](Copyable & ImplicitlyCopyable):
     """Handle to the runtime for async operations.
 
     Provides methods for async operations to register themselves
@@ -21,13 +21,13 @@ struct RuntimeHandle[B: AsyncBackend](Copyable):
     """
     var runtime: Pointer[Runtime[Self.B], MutOrigin.external]
 
-    fn __init__(out self, mut runtime: Pointer[Runtime[Self.B], MutOrigin.external]):
+    fn __init__(out self, var runtime: Pointer[Runtime[Self.B], MutOrigin.external]):
         """Initialize a runtime handle.
 
         Args:
             runtime: Pointer to the runtime.
         """
-        self.runtime = runtime^
+        self.runtime = runtime
 
     fn register_wait_for_read(self, handle: AnyCoroutine, fd: Int32, size: Int) raises:
         """Register a read operation with the runtime.

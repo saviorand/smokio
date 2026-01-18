@@ -22,7 +22,7 @@ struct GrowablePool(Copyable & Movable):
 
 comptime PoolKind = Variant[StaticPool, GrowablePool]
 
-struct Pool[T: Copyable & Movable & ImplicitlyDestructible](Sized):
+struct Pool[T: Copyable & Movable & ImplicitlyDestructible & Defaultable](Sized):
     """A pool of reusable objects.
 
     The pool maintains a list of items and tracks which indices are available

@@ -81,7 +81,7 @@ struct AsyncWrite[B: AsyncBackend](AsyncOperation):
 
         if bytes_written > 0:
             # Write succeeded
-            self.result = int(bytes_written)
+            self.result = Int(bytes_written)
             return True
         elif bytes_written == 0:
             # Nothing written (shouldn't happen)
@@ -89,12 +89,12 @@ struct AsyncWrite[B: AsyncBackend](AsyncOperation):
             return True
         else:
             # Check errno
-            var err = external_call["__errno_location", UnsafePointer[c_int]]()[]
+            var err = external_call["__errno_location", UnsafePointer[origin = MutOrigin.external][c_int]]()[]
             if err == 35 or err == 11:  # EAGAIN or EWOULDBLOCK
                 return False
             else:
                 # Other error
-                self.errno = int(err)
+                self.errno = Int(err)
                 self.result = 0
                 return True
 

@@ -65,10 +65,10 @@ struct AsyncRead[B: AsyncBackend](AsyncOperation):
             var completion = task_ref[].take_completion()
             if completion:
                 var comp_ptr = completion.value()
-                var comp = comp_ptr[].copy()
+                var comp = comp_ptr.copy()
                 if comp.is_read():
-                    var read_result = comp.result[ReadResult]
-                    self.result = read_result.data
+                    var read_result = comp.result[ReadResult].copy()
+                    self.result = read_result.data.copy()
                     self.errno = read_result.errno
                     return True
 
@@ -83,9 +83,9 @@ struct AsyncRead[B: AsyncBackend](AsyncOperation):
         if bytes_read > 0:
             # Read succeeded
             var data = List[UInt8]()
-            for i in range(int(bytes_read)):
+            for i in range(Int(bytes_read)):
                 data.append(buffer[i])
-            self.result = data
+            self.result = data.copy()
             buffer.free()
             return True
         elif bytes_read == 0:
@@ -95,13 +95,13 @@ struct AsyncRead[B: AsyncBackend](AsyncOperation):
             return True
         else:
             # Check errno
-            var err = external_call["__errno_location", UnsafePointer[c_int]]()[]
+            var err = external_call["__errno_location", UnsafePointer[origin = MutOrigin.external][c_int]]()[]
             if err == 35 or err == 11:  # EAGAIN or EWOULDBLOCK
                 buffer.free()
                 return False
             else:
                 # Other error
-                self.errno = int(err)
+                self.errno = Int(err)
                 self.result = List[UInt8]()
                 buffer.free()
                 return True
@@ -132,7 +132,7 @@ struct AsyncRead[B: AsyncBackend](AsyncOperation):
             The data that was read.
         """
         if self.result:
-            var val_ptr = self.result.value()
-            return val_ptr[]^
+            var val_ptr = self.result.value().copy()
+            return val_ptr^
         else:
             return List[UInt8]()
