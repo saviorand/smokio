@@ -40,7 +40,7 @@ struct AsyncRead[B: AsyncBackend](AsyncOperation):
         """
         self.fd = fd
         self.size = size
-        self.handle = handle^
+        self.handle = handle.copy()
         self.result = None
         self.errno = 0
 
@@ -60,11 +60,12 @@ struct AsyncRead[B: AsyncBackend](AsyncOperation):
             return False
 
         # Check if the task has a completion result
-        var task_ref = self.handle.get_runtime_ref()[].scheduler.get_task(task_index)
+        var task_ref = self.handle.get_runtime_mut()[].scheduler.get_task(task_index)
         if task_ref[].result:
             var completion = task_ref[].take_completion()
             if completion:
-                var comp = completion.value()
+                var comp_ptr = completion.value()
+                var comp = comp_ptr[].copy()
                 if comp.is_read():
                     var read_result = comp.result[ReadResult]
                     self.result = read_result.data
@@ -131,6 +132,7 @@ struct AsyncRead[B: AsyncBackend](AsyncOperation):
             The data that was read.
         """
         if self.result:
-            return self.result.value()[]^
+            var val_ptr = self.result.value()
+            return val_ptr[]^
         else:
             return List[UInt8]()

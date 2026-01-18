@@ -80,7 +80,7 @@ fn main() raises:
     # Define async tasks
     async fn read_task_1():
         puts("[Task 1] Starting async read from pipe 1...")
-        var read_op = AsyncRead(read_fd1, 1024, handle)
+        var read_op = AsyncRead(read_fd1, 1024, handle.copy())
         var data = await read_op
 
         var msg = String("bytes from pipe 1")

@@ -75,7 +75,7 @@ struct Runtime[B: AsyncBackend]:
             # Submit pending I/O operations
             if len(self.submission_queue) > 0:
                 for i in range(len(self.submission_queue)):
-                    var submission = self.submission_queue[i]^
+                    var submission = self.submission_queue[i].copy()
                     self.backend.queue_job(submission^)
                 self.backend.submit()
                 self.submission_queue.clear()
@@ -85,8 +85,7 @@ struct Runtime[B: AsyncBackend]:
             var completions = self.backend.reap(max_events=64, wait=should_wait)
 
             for i in range(len(completions)):
-                var completions_owned = completions^
-                var completion = completions_owned[i]
+                var completion = completions[i].copy()
                 if not completion.is_wake():
                     self.scheduler.process_completion(completion^)
 
@@ -143,7 +142,8 @@ struct Runtime[B: AsyncBackend]:
         var task_ref = self.scheduler.get_task(task_index)
 
         var coro = task_ref[].coro_handle
-        if coro.resume():
+        var completed = __mlir_op.`pop.coroutine.resume`[_type=__mlir_type.`!pop.scalar<bool>`](coro)
+        if completed:
             # Task completed
             self.scheduler.release(task_index)
 

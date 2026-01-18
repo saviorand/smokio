@@ -10,7 +10,7 @@ from ..aio.backend import AsyncBackend
 from ..aio.submission import Submission
 from .runtime import Runtime
 
-struct RuntimeHandle[B: AsyncBackend]:
+struct RuntimeHandle[B: AsyncBackend](Copyable):
     """Handle to the runtime for async operations.
 
     Provides methods for async operations to register themselves
@@ -21,13 +21,13 @@ struct RuntimeHandle[B: AsyncBackend]:
     """
     var runtime: Pointer[Runtime[Self.B], MutOrigin.external]
 
-    fn __init__(out self, mut runtime: Pointer[Runtime[Self.B], _]):
+    fn __init__(out self, mut runtime: Pointer[Runtime[Self.B], MutOrigin.external]):
         """Initialize a runtime handle.
 
         Args:
             runtime: Pointer to the runtime.
         """
-        self.runtime = runtime
+        self.runtime = runtime^
 
     fn register_wait_for_read(self, handle: AnyCoroutine, fd: Int32, size: Int) raises:
         """Register a read operation with the runtime.
@@ -65,10 +65,18 @@ struct RuntimeHandle[B: AsyncBackend]:
         self.runtime[].scheduler.set_waiting(task_index)
         self.runtime[].queue_submission(submission^)
 
-    fn get_runtime_ref(self) -> Pointer[Runtime[Self.B], origin_of(self)]:
+    fn get_runtime_ref(self) -> Pointer[Runtime[Self.B], MutOrigin.external]:
         """Get a reference to the runtime.
 
         Returns:
             Pointer to the runtime.
+        """
+        return self.runtime
+
+    fn get_runtime_mut(mut self) -> Pointer[Runtime[Self.B], MutOrigin.external]:
+        """Get a mutable reference to the runtime.
+
+        Returns:
+            Mutable pointer to the runtime.
         """
         return self.runtime

@@ -99,7 +99,7 @@ struct Smokio[B: AsyncBackend]:
             var data = await read_op
             ```
         """
-        return RuntimeHandle[Self.B](self.runtime)
+        return RuntimeHandle[Self.B](Pointer(to=self.runtime))
 
     fn stop(mut self):
         """Request the runtime to stop after the current iteration.

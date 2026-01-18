@@ -68,14 +68,16 @@ struct Pool[T: Copyable & Movable & ImplicitlyDestructible](Sized):
         # Allocate new if under capacity
         if len(self.items) < self.capacity:
             var index = len(self.items)
-            self.items.append(Self.T())
+            var new_item = Self.T()
+            self.items.append(new_item^)
             return index
 
         # Grow if allowed
         if self.kind.isa[GrowablePool]():
             self.capacity = max(1, self.capacity * 2)
             var index = len(self.items)
-            self.items.append(Self.T())
+            var new_item = Self.T()
+            self.items.append(new_item^)
             return index
 
         raise Error("Pool exhausted")
@@ -99,7 +101,7 @@ struct Pool[T: Copyable & Movable & ImplicitlyDestructible](Sized):
         """
         return len(self.items)
 
-    fn get_mut(mut self, index: Int) -> Pointer[Self.T, origin_of(self)]:
+    fn get_mut(mut self, index: Int) -> Pointer[Self.T, origin_of(self.items)]:
         """Get a mutable reference to an item in the pool.
 
         Args:
@@ -108,7 +110,7 @@ struct Pool[T: Copyable & Movable & ImplicitlyDestructible](Sized):
         Returns:
             A mutable reference to the item.
         """
-        return self.items[index]
+        return Pointer(to=self.items[index])
 
     fn is_borrowed(self, index: Int) -> Bool:
         """Check if an item is currently borrowed.

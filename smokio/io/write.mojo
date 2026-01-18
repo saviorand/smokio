@@ -60,7 +60,7 @@ struct AsyncWrite[B: AsyncBackend](AsyncOperation):
             return False
 
         # Check if the task has a completion result
-        var task_ref = self.handle.get_runtime_ref()[].scheduler.get_task(task_index)
+        var task_ref = self.handle.get_runtime_mut()[].scheduler.get_task(task_index)
         if task_ref[].result:
             var completion = task_ref[].take_completion()
             if completion:

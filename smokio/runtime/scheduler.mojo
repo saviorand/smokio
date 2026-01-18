@@ -108,7 +108,7 @@ struct Scheduler:
         task_ref[].store_completion(completion^)
         self.set_runnable(task_index)
 
-    fn get_task(mut self, index: Int) -> Pointer[Task, origin_of(self)]:
+    fn get_task(mut self, index: Int) -> Pointer[Task, origin_of(self.tasks.items)]:
         """Get a mutable reference to a task.
 
         Args:
