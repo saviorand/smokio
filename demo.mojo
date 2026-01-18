@@ -33,7 +33,7 @@ fn set_nonblocking(fd: c_int) -> Bool:
     comptime FIONBIO = 0x8004667e
     var nonblock = alloc[c_int](1)
     nonblock[] = 1
-    var result = external_call["ioctl", Int, c_int, Int, UnsafePointer[c_int]](
+    var result = external_call["ioctl", Int, c_int, Int, UnsafePointer[mut=True, c_int, MutOrigin.external]](
         fd, FIONBIO, nonblock
     )
     nonblock.free()
@@ -90,7 +90,7 @@ fn main() raises:
         if len(data) > 0:
             var result = String()
             for i in range(len(data)):
-                result += chr(int(data[i]))
+                result += chr(Int(data[i]))
             puts("[Task 1] Data: " + result)
 
     async fn read_task_2():
@@ -105,7 +105,7 @@ fn main() raises:
         if len(data) > 0:
             var result = String()
             for i in range(len(data)):
-                result += chr(int(data[i]))
+                result += chr(Int(data[i]))
             puts("[Task 2] Data: " + result)
 
     # Spawn tasks

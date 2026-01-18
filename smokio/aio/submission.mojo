@@ -27,6 +27,7 @@ comptime SubmissionData = Variant[
     WriteSubmission,
 ]
 
+@fieldwise_init
 struct Submission(Copyable & Movable):
     """A submission to be queued with the async backend.
 

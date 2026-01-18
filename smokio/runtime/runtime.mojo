@@ -75,7 +75,8 @@ struct Runtime[B: AsyncBackend]:
             # Submit pending I/O operations
             if len(self.submission_queue) > 0:
                 for i in range(len(self.submission_queue)):
-                    self.backend.queue_job(self.submission_queue[i])
+                    var submission = self.submission_queue[i]
+                    self.backend.queue_job(submission^)
                 self.backend.submit()
                 self.submission_queue.clear()
 
@@ -86,7 +87,7 @@ struct Runtime[B: AsyncBackend]:
             for i in range(len(completions)):
                 var completion = completions[i]
                 if not completion.is_wake():
-                    self.scheduler.process_completion(completion)
+                    self.scheduler.process_completion(completion^)
 
             # Check exit condition
             if self.scheduler.runnable_count == 0 and len(self.submission_queue) == 0:

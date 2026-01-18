@@ -22,7 +22,7 @@ struct GrowablePool(Copyable & Movable):
 
 comptime PoolKind = Variant[StaticPool, GrowablePool]
 
-struct Pool[T: Copyable & Movable & ImplicitlyDestructible]:
+struct Pool[T: Copyable & Movable & ImplicitlyDestructible](Sized):
     """A pool of reusable objects.
 
     The pool maintains a list of items and tracks which indices are available
@@ -68,14 +68,14 @@ struct Pool[T: Copyable & Movable & ImplicitlyDestructible]:
         # Allocate new if under capacity
         if len(self.items) < self.capacity:
             var index = len(self.items)
-            self.items.append(T())
+            self.items.append(Self.T())
             return index
 
         # Grow if allowed
         if self.kind.isa[GrowablePool]():
             self.capacity = max(1, self.capacity * 2)
             var index = len(self.items)
-            self.items.append(T())
+            self.items.append(Self.T())
             return index
 
         raise Error("Pool exhausted")
@@ -91,7 +91,15 @@ struct Pool[T: Copyable & Movable & ImplicitlyDestructible]:
         debug_assert(index >= 0 and index < len(self.items), "Invalid pool index")
         self.available.append(index)
 
-    fn get_mut(mut self, index: Int) -> Reference[T, __lifetime_of(self)]:
+    fn __len__(self) -> Int:
+        """Get the number of items in the pool.
+
+        Returns:
+            The total number of items (both available and in-use).
+        """
+        return len(self.items)
+
+    fn get_mut(mut self, index: Int) -> Pointer[Self.T, origin_of(self)]:
         """Get a mutable reference to an item in the pool.
 
         Args:
@@ -117,11 +125,3 @@ struct Pool[T: Copyable & Movable & ImplicitlyDestructible]:
                 return False
         # If not in available list and within items range, it's borrowed
         return index < len(self.items)
-
-    fn __len__(self) -> Int:
-        """Get the current number of items in the pool.
-
-        Returns:
-            Total number of items (both borrowed and available).
-        """
-        return len(self.items)

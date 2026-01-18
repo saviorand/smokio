@@ -5,7 +5,6 @@ register I/O operations with the runtime.
 """
 
 from memory import Pointer
-from memory.reference import Reference
 from builtin.builtin_list import _LITRefPackHelper
 from ..aio.backend import AsyncBackend
 from ..aio.submission import Submission
@@ -20,13 +19,13 @@ struct RuntimeHandle[B: AsyncBackend]:
     Parameters:
         B: The AsyncBackend type used by the runtime.
     """
-    var runtime: Reference[Runtime[B], __lifetime_of(self)]
+    var runtime: Pointer[Runtime[Self.B], origin_of(self)]
 
-    fn __init__(out self, mut runtime: Reference[Runtime[B], _]):
+    fn __init__(out self, mut runtime: Pointer[Runtime[Self.B], _]):
         """Initialize a runtime handle.
 
         Args:
-            runtime: Reference to the runtime.
+            runtime: Pointer to the runtime.
         """
         self.runtime = runtime
 
@@ -66,10 +65,10 @@ struct RuntimeHandle[B: AsyncBackend]:
         self.runtime[].scheduler.set_waiting(task_index)
         self.runtime[].queue_submission(submission)
 
-    fn get_runtime_ref(self) -> Reference[Runtime[B], __lifetime_of(self)]:
+    fn get_runtime_ref(self) -> Pointer[Runtime[Self.B], origin_of(self)]:
         """Get a reference to the runtime.
 
         Returns:
-            Reference to the runtime.
+            Pointer to the runtime.
         """
         return self.runtime

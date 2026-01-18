@@ -92,7 +92,7 @@ struct Scheduler:
         task_ref[].set_dead()
         self.tasks.release(index)
 
-    fn process_completion(mut self, owned completion: Completion) raises:
+    fn process_completion(mut self, var completion: Completion) raises:
         """Process a completion from the backend.
 
         Stores the completion result in the task and marks it as runnable.
@@ -108,7 +108,7 @@ struct Scheduler:
         task_ref[].store_completion(completion^)
         self.set_runnable(task_index)
 
-    fn get_task(mut self, index: Int) -> Reference[Task, __lifetime_of(self)]:
+    fn get_task(mut self, index: Int) -> Pointer[Task, origin_of(self)]:
         """Get a mutable reference to a task.
 
         Args:
@@ -137,4 +137,4 @@ struct Scheduler:
         for i in range(len(self.tasks)):
             if self.tasks.is_borrowed(i):
                 result.append(i)
-        return result
+        return result^

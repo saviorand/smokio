@@ -40,7 +40,7 @@ struct AsyncRead[B: AsyncBackend](AsyncOperation):
         """
         self.fd = fd
         self.size = size
-        self.handle = handle
+        self.handle = handle^
         self.result = None
         self.errno = 0
 
@@ -131,6 +131,6 @@ struct AsyncRead[B: AsyncBackend](AsyncOperation):
             The data that was read.
         """
         if self.result:
-            return self.result.value()[]
+            return self.result.value()[]^
         else:
             return List[UInt8]()
