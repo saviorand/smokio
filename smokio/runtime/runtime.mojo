@@ -142,8 +142,10 @@ struct Runtime[B: AsyncBackend]:
         var task_ref = self.scheduler.get_task(task_index)
 
         var coro = task_ref[].coro_handle
-        var completed = __mlir_op.`pop.coroutine.resume`[_type=__mlir_type.`!pop.scalar<bool>`](coro)
-        if completed:
+        var resume_fn = __mlir_op.`co.resume`[_type=fn(AnyCoroutine)->None](coro)
+        resume_fn(coro)
+        # Check if task is still runnable - if not, it completed
+        if not task_ref[].is_runnable():
             # Task completed
             self.scheduler.release(task_index)
 

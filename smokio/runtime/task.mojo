@@ -47,7 +47,7 @@ struct Task(Copyable & Movable & ImplicitlyDestructible & Defaultable):
         """Initialize a task in the Dead state."""
         self.index = -1
         self.state = TaskState(DeadState())
-        self.coro_handle = AnyCoroutine()
+        self.coro_handle = __mlir_attr[`#interp.pointer<0> : `, AnyCoroutine]
         self.result = None
 
     # State transitions

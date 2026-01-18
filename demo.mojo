@@ -110,8 +110,10 @@ fn main() raises:
 
     # Spawn tasks
     puts("Spawning async tasks...\n")
-    var task1_id = smokio.spawn(read_task_1())
-    var task2_id = smokio.spawn(read_task_2())
+    var coro1 = read_task_1()
+    var task1_id = smokio.spawn(coro1^._take_handle())
+    var coro2 = read_task_2()
+    var task2_id = smokio.spawn(coro2^._take_handle())
     puts("Spawned task 1 with ID: " + String(task1_id))
     puts("Spawned task 2 with ID: " + String(task2_id))
 
