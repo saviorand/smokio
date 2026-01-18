@@ -67,7 +67,7 @@ struct Task(Copyable & Movable):
 
     # Result management
 
-    fn store_completion(mut self, owned completion: Completion):
+    fn store_completion(mut self, var completion: Completion):
         """Store a completion result for this task.
 
         Args:

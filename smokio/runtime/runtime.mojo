@@ -75,7 +75,7 @@ struct Runtime[B: AsyncBackend]:
             # Submit pending I/O operations
             if len(self.submission_queue) > 0:
                 for i in range(len(self.submission_queue)):
-                    var submission = self.submission_queue[i]
+                    var submission = self.submission_queue[i]^
                     self.backend.queue_job(submission^)
                 self.backend.submit()
                 self.submission_queue.clear()
@@ -85,7 +85,8 @@ struct Runtime[B: AsyncBackend]:
             var completions = self.backend.reap(max_events=64, wait=should_wait)
 
             for i in range(len(completions)):
-                var completion = completions[i]
+                var completions_owned = completions^
+                var completion = completions_owned[i]
                 if not completion.is_wake():
                     self.scheduler.process_completion(completion^)
 
@@ -111,7 +112,7 @@ struct Runtime[B: AsyncBackend]:
             if task_ref[].is_runnable():
                 runnable.append(task_idx)
 
-        return runnable
+        return runnable^
 
     fn _has_waiting_tasks(mut self) -> Bool:
         """Check if any tasks are waiting for I/O.
@@ -148,7 +149,7 @@ struct Runtime[B: AsyncBackend]:
 
         self.current_task = None
 
-    fn queue_submission(mut self, owned submission: Submission):
+    fn queue_submission(mut self, var submission: Submission):
         """Queue a submission for the next I/O batch.
 
         Args:
