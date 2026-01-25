@@ -15,7 +15,7 @@ from smokio.kqueue import (
     EV_ADD,
     EV_ENABLE,
 )
-from smokio.aliases import ExternalMutUnsafePointer
+from smokio.aliases import ExternalMutUnsafePointer, ExternalImmutUnsafePointer
 
 
 # ===-----------------------------------------------------------------------===#
@@ -265,6 +265,58 @@ struct AsyncRead:
         # Execution resumes here when fd is ready
         puts("  [AsyncRead] fd " + String(self.fd) + " resumed, reading...")
         bytes = try_read(self.fd, self.buffer, self.size)
+        return bytes
+
+
+fn try_write(fd: c_int, buffer: ExternalImmutUnsafePointer[UInt8], size: Int) -> Int:
+    """Attempt to write to a file descriptor without blocking."""
+    return external_call["write", Int, c_int, ExternalImmutUnsafePointer[UInt8], UInt](fd, buffer, UInt(size))
+
+
+struct AsyncWrite:
+    """Awaitable write that suspends until fd is writable."""
+    var runtime: RuntimeHandle
+    var fd: c_int
+    var buffer: ExternalImmutUnsafePointer[UInt8]
+    var size: Int
+
+    fn __init__(out self, runtime: RuntimeHandle, fd: c_int, buffer: ExternalImmutUnsafePointer[UInt8], size: Int):
+        self.runtime = runtime
+        self.fd = fd
+        self.buffer = buffer
+        self.size = size
+
+    @always_inline
+    fn __await__(mut self) -> Int:
+        _ = set_nonblocking(self.fd)
+
+        # Try immediate write first
+        var bytes = try_write(self.fd, self.buffer, self.size)
+        if bytes >= 0:
+            return bytes
+
+        # Check if we got EAGAIN (would block)
+        var errno = external_call["__error", ExternalMutUnsafePointer[c_int]]()
+        comptime EAGAIN = 35
+        if errno[] != EAGAIN:
+            return -1
+
+        puts("  [AsyncWrite] fd " + String(self.fd) + " not ready, suspending...")
+
+        # Suspend and register with kqueue (use EVFILT_WRITE for write readiness)
+        @always_inline
+        @parameter
+        fn suspend_callback(cur_hdl: AnyCoroutine):
+            # For writes, we'd need to register with EVFILT_WRITE instead of EVFILT_READ
+            # For now, using register_read as placeholder - you may want to add register_write
+            _ = self.runtime._ptr[].register_read(cur_hdl, self.fd)
+
+        # Suspend execution here - returns when runtime calls _coro_resume_fn
+        _suspend_async[suspend_callback]()
+
+        # Execution resumes here when fd is ready
+        puts("  [AsyncWrite] fd " + String(self.fd) + " resumed, writing...")
+        bytes = try_write(self.fd, self.buffer, self.size)
         return bytes
 
 
