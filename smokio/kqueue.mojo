@@ -441,7 +441,7 @@ struct Kevent:
     """Filter-specific flags."""
     var data: intptr_t
     """Filter-specific data."""
-    var udata: UnsafePointer[c_void, origin=ImmutOrigin.external]
+    var udata: UnsafePointer[c_void, origin=ImmutExternalOrigin]
     """User-defined data."""
 
     fn __init__(out self):
@@ -451,7 +451,7 @@ struct Kevent:
         self.flags = 0
         self.fflags = 0
         self.data = 0
-        self.udata = UnsafePointer[c_void, origin=ImmutOrigin.external]()
+        self.udata = UnsafePointer[c_void, origin=ImmutExternalOrigin]()
     
     fn __init__(
         out self,
@@ -460,7 +460,7 @@ struct Kevent:
         flags: c_short,
         fflags: c_uint = 0,
         data: intptr_t = 0,
-        udata: UnsafePointer[c_void, origin=ImmutOrigin.external] = UnsafePointer[c_void, origin=ImmutOrigin.external](),
+        udata: UnsafePointer[c_void, origin=ImmutExternalOrigin] = UnsafePointer[c_void, origin=ImmutExternalOrigin](),
     ):
         """Initialize a kevent structure with specific values.
 
@@ -620,7 +620,7 @@ fn kevent(
     nchanges: c_int,
     eventlist: UnsafePointer[Kevent],
     nevents: c_int,
-    timeout: UnsafePointer[Timespec, origin=ImmutOrigin.external] = UnsafePointer[Timespec, origin=ImmutOrigin.external](),
+    timeout: UnsafePointer[Timespec, origin=ImmutExternalOrigin] = UnsafePointer[Timespec, origin=ImmutExternalOrigin](),
 ) raises KeventError -> c_int:
     """Libc POSIX `kevent` function.
     

@@ -19,11 +19,23 @@ from utils import Variant
 struct AcceptEBADFError(CustomError):
     comptime message = "accept (EBADF): socket is not a valid descriptor."
 
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
+
 
 @fieldwise_init
 @register_passable("trivial")
 struct AcceptEINTRError(CustomError):
     comptime message = "accept (EINTR): The system call was interrupted by a signal that was caught before a valid connection arrived."
+
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
 
 
 @fieldwise_init
@@ -31,11 +43,23 @@ struct AcceptEINTRError(CustomError):
 struct AcceptEAGAINError(CustomError):
     comptime message = "accept (EAGAIN/EWOULDBLOCK): The socket is marked nonblocking and no connections are present to be accepted."
 
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
+
 
 @fieldwise_init
 @register_passable("trivial")
 struct AcceptECONNABORTEDError(CustomError):
     comptime message = "accept (ECONNABORTED): A connection has been aborted."
+
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
 
 
 @fieldwise_init
@@ -43,11 +67,23 @@ struct AcceptECONNABORTEDError(CustomError):
 struct AcceptEFAULTError(CustomError):
     comptime message = "accept (EFAULT): The address argument is not in a writable part of the user address space."
 
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
+
 
 @fieldwise_init
 @register_passable("trivial")
 struct AcceptEINVALError(CustomError):
     comptime message = "accept (EINVAL): Socket is not listening for connections, or address_len is invalid."
+
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
 
 
 @fieldwise_init
@@ -55,11 +91,23 @@ struct AcceptEINVALError(CustomError):
 struct AcceptEMFILEError(CustomError):
     comptime message = "accept (EMFILE): The per-process limit of open file descriptors has been reached."
 
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
+
 
 @fieldwise_init
 @register_passable("trivial")
 struct AcceptENFILEError(CustomError):
     comptime message = "accept (ENFILE): The system limit on the total number of open files has been reached."
+
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
 
 
 @fieldwise_init
@@ -67,11 +115,23 @@ struct AcceptENFILEError(CustomError):
 struct AcceptENOBUFSError(CustomError):
     comptime message = "accept (ENOBUFS): Not enough free memory."
 
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
+
 
 @fieldwise_init
 @register_passable("trivial")
 struct AcceptENOTSOCKError(CustomError):
     comptime message = "accept (ENOTSOCK): socket is a descriptor for a file, not a socket."
+
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
 
 
 @fieldwise_init
@@ -79,17 +139,35 @@ struct AcceptENOTSOCKError(CustomError):
 struct AcceptEOPNOTSUPPError(CustomError):
     comptime message = "accept (EOPNOTSUPP): The referenced socket is not of type SOCK_STREAM."
 
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
+
 
 @fieldwise_init
 @register_passable("trivial")
 struct AcceptEPERMError(CustomError):
     comptime message = "accept (EPERM): Firewall rules forbid connection."
 
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
+
 
 @fieldwise_init
 @register_passable("trivial")
 struct AcceptEPROTOError(CustomError):
     comptime message = "accept (EPROTO): Protocol error."
+
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
 
 
 # Bind errors
@@ -98,11 +176,23 @@ struct AcceptEPROTOError(CustomError):
 struct BindEACCESError(CustomError):
     comptime message = "bind (EACCES): The address is protected, and the user is not the superuser."
 
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
+
 
 @fieldwise_init
 @register_passable("trivial")
 struct BindEADDRINUSEError(CustomError):
     comptime message = "bind (EADDRINUSE): The given address is already in use."
+
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
 
 
 @fieldwise_init
@@ -110,11 +200,23 @@ struct BindEADDRINUSEError(CustomError):
 struct BindEBADFError(CustomError):
     comptime message = "bind (EBADF): socket is not a valid descriptor."
 
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
+
 
 @fieldwise_init
 @register_passable("trivial")
 struct BindEFAULTError(CustomError):
     comptime message = "bind (EFAULT): address points outside the user's accessible address space."
+
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
 
 
 @fieldwise_init
@@ -122,11 +224,23 @@ struct BindEFAULTError(CustomError):
 struct BindEINVALError(CustomError):
     comptime message = "bind (EINVAL): The socket is already bound to an address."
 
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
+
 
 @fieldwise_init
 @register_passable("trivial")
 struct BindELOOPError(CustomError):
     comptime message = "bind (ELOOP): Too many symbolic links were encountered in resolving address."
+
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
 
 
 @fieldwise_init
@@ -134,17 +248,35 @@ struct BindELOOPError(CustomError):
 struct BindENAMETOOLONGError(CustomError):
     comptime message = "bind (ENAMETOOLONG): address is too long."
 
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
+
 
 @fieldwise_init
 @register_passable("trivial")
 struct BindENOMEMError(CustomError):
     comptime message = "bind (ENOMEM): Insufficient kernel memory was available."
 
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
+
 
 @fieldwise_init
 @register_passable("trivial")
 struct BindENOTSOCKError(CustomError):
     comptime message = "bind (ENOTSOCK): socket is a descriptor for a file, not a socket."
+
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
 
 
 # Close errors
@@ -153,11 +285,23 @@ struct BindENOTSOCKError(CustomError):
 struct CloseEBADFError(CustomError):
     comptime message = "close (EBADF): The file_descriptor argument is not a valid open file descriptor."
 
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
+
 
 @fieldwise_init
 @register_passable("trivial")
 struct CloseEINTRError(CustomError):
     comptime message = "close (EINTR): The close() function was interrupted by a signal."
+
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
 
 
 @fieldwise_init
@@ -165,11 +309,23 @@ struct CloseEINTRError(CustomError):
 struct CloseEIOError(CustomError):
     comptime message = "close (EIO): An I/O error occurred while reading from or writing to the file system."
 
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
+
 
 @fieldwise_init
 @register_passable("trivial")
 struct CloseENOSPCError(CustomError):
     comptime message = "close (ENOSPC or EDQUOT): On NFS, these errors are not normally reported against the first write which exceeds the available storage space, but instead against a subsequent write, fsync, or close."
+
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
 
 
 # Connect errors
@@ -178,11 +334,23 @@ struct CloseENOSPCError(CustomError):
 struct ConnectEACCESError(CustomError):
     comptime message = "connect (EACCES): Write permission is denied on the socket file, or search permission is denied for one of the directories in the path prefix."
 
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
+
 
 @fieldwise_init
 @register_passable("trivial")
 struct ConnectEADDRINUSEError(CustomError):
     comptime message = "connect (EADDRINUSE): Local address is already in use."
+
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
 
 
 @fieldwise_init
@@ -190,11 +358,23 @@ struct ConnectEADDRINUSEError(CustomError):
 struct ConnectEAFNOSUPPORTError(CustomError):
     comptime message = "connect (EAFNOSUPPORT): The passed address didn't have the correct address family in its sa_family field."
 
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
+
 
 @fieldwise_init
 @register_passable("trivial")
 struct ConnectEAGAINError(CustomError):
     comptime message = "connect (EAGAIN): No more free local ports or insufficient entries in the routing cache."
+
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
 
 
 @fieldwise_init
@@ -202,11 +382,23 @@ struct ConnectEAGAINError(CustomError):
 struct ConnectEALREADYError(CustomError):
     comptime message = "connect (EALREADY): The socket is nonblocking and a previous connection attempt has not yet been completed."
 
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
+
 
 @fieldwise_init
 @register_passable("trivial")
 struct ConnectEBADFError(CustomError):
     comptime message = "connect (EBADF): The file descriptor is not a valid index in the descriptor table."
+
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
 
 
 @fieldwise_init
@@ -214,11 +406,23 @@ struct ConnectEBADFError(CustomError):
 struct ConnectECONNREFUSEDError(CustomError):
     comptime message = "connect (ECONNREFUSED): No-one listening on the remote address."
 
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
+
 
 @fieldwise_init
 @register_passable("trivial")
 struct ConnectEFAULTError(CustomError):
     comptime message = "connect (EFAULT): The socket structure address is outside the user's address space."
+
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
 
 
 @fieldwise_init
@@ -226,11 +430,23 @@ struct ConnectEFAULTError(CustomError):
 struct ConnectEINPROGRESSError(CustomError):
     comptime message = "connect (EINPROGRESS): The socket is nonblocking and the connection cannot be completed immediately. It is possible to select(2) or poll(2) for completion by selecting the socket for writing. After select(2) indicates writability, use getsockopt(2) to read the SO_ERROR option at level SOL_SOCKET to determine whether connect() completed successfully (SO_ERROR is zero) or unsuccessfully (SO_ERROR is one of the usual error codes listed here, explaining the reason for the failure)."
 
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
+
 
 @fieldwise_init
 @register_passable("trivial")
 struct ConnectEINTRError(CustomError):
     comptime message = "connect (EINTR): The system call was interrupted by a signal that was caught."
+
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
 
 
 @fieldwise_init
@@ -238,11 +454,23 @@ struct ConnectEINTRError(CustomError):
 struct ConnectEISCONNError(CustomError):
     comptime message = "connect (EISCONN): The socket is already connected."
 
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
+
 
 @fieldwise_init
 @register_passable("trivial")
 struct ConnectENETUNREACHError(CustomError):
     comptime message = "connect (ENETUNREACH): Network is unreachable."
+
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
 
 
 @fieldwise_init
@@ -250,11 +478,23 @@ struct ConnectENETUNREACHError(CustomError):
 struct ConnectENOTSOCKError(CustomError):
     comptime message = "connect (ENOTSOCK): The file descriptor is not associated with a socket."
 
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
+
 
 @fieldwise_init
 @register_passable("trivial")
 struct ConnectETIMEDOUTError(CustomError):
     comptime message = "connect (ETIMEDOUT): Timeout while attempting connection."
+
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
 
 
 # Getpeername errors
@@ -263,11 +503,23 @@ struct ConnectETIMEDOUTError(CustomError):
 struct GetpeernameEBADFError(CustomError):
     comptime message = "getpeername (EBADF): socket is not a valid descriptor."
 
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
+
 
 @fieldwise_init
 @register_passable("trivial")
 struct GetpeernameEFAULTError(CustomError):
     comptime message = "getpeername (EFAULT): The address argument points to memory not in a valid part of the process address space."
+
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
 
 
 @fieldwise_init
@@ -275,11 +527,23 @@ struct GetpeernameEFAULTError(CustomError):
 struct GetpeernameEINVALError(CustomError):
     comptime message = "getpeername (EINVAL): address_len is invalid (e.g., is negative)."
 
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
+
 
 @fieldwise_init
 @register_passable("trivial")
 struct GetpeernameENOBUFSError(CustomError):
     comptime message = "getpeername (ENOBUFS): Insufficient resources were available in the system to perform the operation."
+
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
 
 
 @fieldwise_init
@@ -287,11 +551,23 @@ struct GetpeernameENOBUFSError(CustomError):
 struct GetpeernameENOTCONNError(CustomError):
     comptime message = "getpeername (ENOTCONN): The socket is not connected."
 
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
+
 
 @fieldwise_init
 @register_passable("trivial")
 struct GetpeernameENOTSOCKError(CustomError):
     comptime message = "getpeername (ENOTSOCK): The argument socket is not a socket."
+
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
 
 
 # Getsockname errors
@@ -300,11 +576,23 @@ struct GetpeernameENOTSOCKError(CustomError):
 struct GetsocknameEBADFError(CustomError):
     comptime message = "getsockname (EBADF): socket is not a valid descriptor."
 
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
+
 
 @fieldwise_init
 @register_passable("trivial")
 struct GetsocknameEFAULTError(CustomError):
     comptime message = "getsockname (EFAULT): The address argument points to memory not in a valid part of the process address space."
+
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
 
 
 @fieldwise_init
@@ -312,17 +600,35 @@ struct GetsocknameEFAULTError(CustomError):
 struct GetsocknameEINVALError(CustomError):
     comptime message = "getsockname (EINVAL): address_len is invalid (e.g., is negative)."
 
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
+
 
 @fieldwise_init
 @register_passable("trivial")
 struct GetsocknameENOBUFSError(CustomError):
     comptime message = "getsockname (ENOBUFS): Insufficient resources were available in the system to perform the operation."
 
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
+
 
 @fieldwise_init
 @register_passable("trivial")
 struct GetsocknameENOTSOCKError(CustomError):
     comptime message = "getsockname (ENOTSOCK): The argument socket is a file, not a socket."
+
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
 
 
 # Getsockopt errors
@@ -331,11 +637,23 @@ struct GetsocknameENOTSOCKError(CustomError):
 struct GetsockoptEBADFError(CustomError):
     comptime message = "getsockopt (EBADF): The argument socket is not a valid descriptor."
 
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
+
 
 @fieldwise_init
 @register_passable("trivial")
 struct GetsockoptEFAULTError(CustomError):
     comptime message = "getsockopt (EFAULT): The argument option_value points outside the process's allocated address space."
+
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
 
 
 @fieldwise_init
@@ -343,17 +661,35 @@ struct GetsockoptEFAULTError(CustomError):
 struct GetsockoptEINVALError(CustomError):
     comptime message = "getsockopt (EINVAL): The argument option_len is invalid."
 
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
+
 
 @fieldwise_init
 @register_passable("trivial")
 struct GetsockoptENOPROTOOPTError(CustomError):
     comptime message = "getsockopt (ENOPROTOOPT): The option is unknown at the level indicated."
 
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
+
 
 @fieldwise_init
 @register_passable("trivial")
 struct GetsockoptENOTSOCKError(CustomError):
     comptime message = "getsockopt (ENOTSOCK): The argument socket is not a socket."
+
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
 
 
 # Listen errors
@@ -362,11 +698,23 @@ struct GetsockoptENOTSOCKError(CustomError):
 struct ListenEADDRINUSEError(CustomError):
     comptime message = "listen (EADDRINUSE): Another socket is already listening on the same port."
 
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
+
 
 @fieldwise_init
 @register_passable("trivial")
 struct ListenEBADFError(CustomError):
     comptime message = "listen (EBADF): socket is not a valid descriptor."
+
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
 
 
 @fieldwise_init
@@ -374,11 +722,23 @@ struct ListenEBADFError(CustomError):
 struct ListenENOTSOCKError(CustomError):
     comptime message = "listen (ENOTSOCK): socket is a descriptor for a file, not a socket."
 
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
+
 
 @fieldwise_init
 @register_passable("trivial")
 struct ListenEOPNOTSUPPError(CustomError):
     comptime message = "listen (EOPNOTSUPP): The socket is not of a type that supports the listen() operation."
+
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
 
 
 # Recv errors
@@ -387,11 +747,23 @@ struct ListenEOPNOTSUPPError(CustomError):
 struct RecvEAGAINError(CustomError):
     comptime message = "recv (EAGAIN/EWOULDBLOCK): The socket is marked nonblocking and the receive operation would block."
 
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
+
 
 @fieldwise_init
 @register_passable("trivial")
 struct RecvEBADFError(CustomError):
     comptime message = "recv (EBADF): The argument socket is an invalid descriptor."
+
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
 
 
 @fieldwise_init
@@ -399,11 +771,23 @@ struct RecvEBADFError(CustomError):
 struct RecvECONNREFUSEDError(CustomError):
     comptime message = "recv (ECONNREFUSED): The remote host refused to allow the network connection."
 
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
+
 
 @fieldwise_init
 @register_passable("trivial")
 struct RecvEFAULTError(CustomError):
     comptime message = "recv (EFAULT): buffer points outside the process's address space."
+
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
 
 
 @fieldwise_init
@@ -411,17 +795,35 @@ struct RecvEFAULTError(CustomError):
 struct RecvEINTRError(CustomError):
     comptime message = "recv (EINTR): The receive was interrupted by delivery of a signal before any data were available."
 
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
+
 
 @fieldwise_init
 @register_passable("trivial")
 struct RecvENOTCONNError(CustomError):
     comptime message = "recv (ENOTCONN): The socket is not connected."
 
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
+
 
 @fieldwise_init
 @register_passable("trivial")
 struct RecvENOTSOCKError(CustomError):
     comptime message = "recv (ENOTSOCK): The file descriptor is not associated with a socket."
+
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
 
 
 # Recvfrom errors
@@ -430,11 +832,23 @@ struct RecvENOTSOCKError(CustomError):
 struct RecvfromEAGAINError(CustomError):
     comptime message = "recvfrom (EAGAIN/EWOULDBLOCK): The socket is marked nonblocking and the receive operation would block."
 
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
+
 
 @fieldwise_init
 @register_passable("trivial")
 struct RecvfromEBADFError(CustomError):
     comptime message = "recvfrom (EBADF): The argument socket is an invalid descriptor."
+
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
 
 
 @fieldwise_init
@@ -442,11 +856,23 @@ struct RecvfromEBADFError(CustomError):
 struct RecvfromECONNRESETError(CustomError):
     comptime message = "recvfrom (ECONNRESET): A connection was forcibly closed by a peer."
 
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
+
 
 @fieldwise_init
 @register_passable("trivial")
 struct RecvfromEINTRError(CustomError):
     comptime message = "recvfrom (EINTR): The receive was interrupted by delivery of a signal."
+
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
 
 
 @fieldwise_init
@@ -454,11 +880,23 @@ struct RecvfromEINTRError(CustomError):
 struct RecvfromEINVALError(CustomError):
     comptime message = "recvfrom (EINVAL): Invalid argument passed."
 
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
+
 
 @fieldwise_init
 @register_passable("trivial")
 struct RecvfromEIOError(CustomError):
     comptime message = "recvfrom (EIO): An I/O error occurred."
+
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
 
 
 @fieldwise_init
@@ -466,11 +904,23 @@ struct RecvfromEIOError(CustomError):
 struct RecvfromENOBUFSError(CustomError):
     comptime message = "recvfrom (ENOBUFS): Insufficient resources were available in the system to perform the operation."
 
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
+
 
 @fieldwise_init
 @register_passable("trivial")
 struct RecvfromENOMEMError(CustomError):
     comptime message = "recvfrom (ENOMEM): Insufficient memory was available to fulfill the request."
+
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
 
 
 @fieldwise_init
@@ -478,11 +928,23 @@ struct RecvfromENOMEMError(CustomError):
 struct RecvfromENOTCONNError(CustomError):
     comptime message = "recvfrom (ENOTCONN): The socket is not connected."
 
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
+
 
 @fieldwise_init
 @register_passable("trivial")
 struct RecvfromENOTSOCKError(CustomError):
     comptime message = "recvfrom (ENOTSOCK): The file descriptor is not associated with a socket."
+
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
 
 
 @fieldwise_init
@@ -490,11 +952,23 @@ struct RecvfromENOTSOCKError(CustomError):
 struct RecvfromEOPNOTSUPPError(CustomError):
     comptime message = "recvfrom (EOPNOTSUPP): The specified flags are not supported for this socket type or protocol."
 
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
+
 
 @fieldwise_init
 @register_passable("trivial")
 struct RecvfromETIMEDOUTError(CustomError):
     comptime message = "recvfrom (ETIMEDOUT): The connection timed out."
+
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
 
 
 # Send errors
@@ -503,11 +977,23 @@ struct RecvfromETIMEDOUTError(CustomError):
 struct SendEAGAINError(CustomError):
     comptime message = "send (EAGAIN/EWOULDBLOCK): The socket is marked nonblocking and the send operation would block."
 
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
+
 
 @fieldwise_init
 @register_passable("trivial")
 struct SendEBADFError(CustomError):
     comptime message = "send (EBADF): The argument socket is an invalid descriptor."
+
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
 
 
 @fieldwise_init
@@ -515,11 +1001,23 @@ struct SendEBADFError(CustomError):
 struct SendECONNREFUSEDError(CustomError):
     comptime message = "send (ECONNREFUSED): The remote host refused to allow the network connection."
 
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
+
 
 @fieldwise_init
 @register_passable("trivial")
 struct SendECONNRESETError(CustomError):
     comptime message = "send (ECONNRESET): Connection reset by peer."
+
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
 
 
 @fieldwise_init
@@ -527,11 +1025,23 @@ struct SendECONNRESETError(CustomError):
 struct SendEDESTADDRREQError(CustomError):
     comptime message = "send (EDESTADDRREQ): The socket is not connection-mode, and no peer address is set."
 
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
+
 
 @fieldwise_init
 @register_passable("trivial")
 struct SendEFAULTError(CustomError):
     comptime message = "send (EFAULT): buffer points outside the process's address space."
+
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
 
 
 @fieldwise_init
@@ -539,11 +1049,23 @@ struct SendEFAULTError(CustomError):
 struct SendEINTRError(CustomError):
     comptime message = "send (EINTR): The send was interrupted by delivery of a signal."
 
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
+
 
 @fieldwise_init
 @register_passable("trivial")
 struct SendEINVALError(CustomError):
     comptime message = "send (EINVAL): Invalid argument passed."
+
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
 
 
 @fieldwise_init
@@ -551,11 +1073,23 @@ struct SendEINVALError(CustomError):
 struct SendEISCONNError(CustomError):
     comptime message = "send (EISCONN): The connection-mode socket was connected already but a recipient was specified."
 
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
+
 
 @fieldwise_init
 @register_passable("trivial")
 struct SendENOBUFSError(CustomError):
     comptime message = "send (ENOBUFS): The output queue for a network interface was full."
+
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
 
 
 @fieldwise_init
@@ -563,11 +1097,23 @@ struct SendENOBUFSError(CustomError):
 struct SendENOMEMError(CustomError):
     comptime message = "send (ENOMEM): No memory available."
 
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
+
 
 @fieldwise_init
 @register_passable("trivial")
 struct SendENOTCONNError(CustomError):
     comptime message = "send (ENOTCONN): The socket is not connected."
+
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
 
 
 @fieldwise_init
@@ -575,11 +1121,23 @@ struct SendENOTCONNError(CustomError):
 struct SendENOTSOCKError(CustomError):
     comptime message = "send (ENOTSOCK): The file descriptor is not associated with a socket."
 
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
+
 
 @fieldwise_init
 @register_passable("trivial")
 struct SendEOPNOTSUPPError(CustomError):
     comptime message = "send (EOPNOTSUPP): Some bit in the flags argument is inappropriate for the socket type."
+
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
 
 
 # Sendto errors
@@ -588,11 +1146,23 @@ struct SendEOPNOTSUPPError(CustomError):
 struct SendtoEACCESError(CustomError):
     comptime message = "sendto (EACCES): Write access to the named socket is denied."
 
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
+
 
 @fieldwise_init
 @register_passable("trivial")
 struct SendtoEAFNOSUPPORTError(CustomError):
     comptime message = "sendto (EAFNOSUPPORT): Addresses in the specified address family cannot be used with this socket."
+
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
 
 
 @fieldwise_init
@@ -600,11 +1170,23 @@ struct SendtoEAFNOSUPPORTError(CustomError):
 struct SendtoEAGAINError(CustomError):
     comptime message = "sendto (EAGAIN/EWOULDBLOCK): The socket's file descriptor is marked O_NONBLOCK and the requested operation would block."
 
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
+
 
 @fieldwise_init
 @register_passable("trivial")
 struct SendtoEBADFError(CustomError):
     comptime message = "sendto (EBADF): The argument socket is an invalid descriptor."
+
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
 
 
 @fieldwise_init
@@ -612,11 +1194,23 @@ struct SendtoEBADFError(CustomError):
 struct SendtoECONNRESETError(CustomError):
     comptime message = "sendto (ECONNRESET): A connection was forcibly closed by a peer."
 
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
+
 
 @fieldwise_init
 @register_passable("trivial")
 struct SendtoEDESTADDRREQError(CustomError):
     comptime message = "sendto (EDESTADDRREQ): The socket is not connection-mode and does not have its peer address set, and no destination address was specified."
+
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
 
 
 @fieldwise_init
@@ -624,11 +1218,23 @@ struct SendtoEDESTADDRREQError(CustomError):
 struct SendtoEHOSTUNREACHError(CustomError):
     comptime message = "sendto (EHOSTUNREACH): The destination host cannot be reached."
 
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
+
 
 @fieldwise_init
 @register_passable("trivial")
 struct SendtoEINTRError(CustomError):
     comptime message = "sendto (EINTR): The send was interrupted by delivery of a signal."
+
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
 
 
 @fieldwise_init
@@ -636,11 +1242,23 @@ struct SendtoEINTRError(CustomError):
 struct SendtoEINVALError(CustomError):
     comptime message = "sendto (EINVAL): Invalid argument passed."
 
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
+
 
 @fieldwise_init
 @register_passable("trivial")
 struct SendtoEIOError(CustomError):
     comptime message = "sendto (EIO): An I/O error occurred."
+
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
 
 
 @fieldwise_init
@@ -648,11 +1266,23 @@ struct SendtoEIOError(CustomError):
 struct SendtoEISCONNError(CustomError):
     comptime message = "sendto (EISCONN): A destination address was specified and the socket is already connected."
 
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
+
 
 @fieldwise_init
 @register_passable("trivial")
 struct SendtoELOOPError(CustomError):
     comptime message = "sendto (ELOOP): More than SYMLOOP_MAX symbolic links were encountered during resolution of the pathname in the socket address."
+
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
 
 
 @fieldwise_init
@@ -660,11 +1290,23 @@ struct SendtoELOOPError(CustomError):
 struct SendtoEMSGSIZEError(CustomError):
     comptime message = "sendto (EMSGSIZE): The message is too large to be sent all at once, as the socket requires."
 
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
+
 
 @fieldwise_init
 @register_passable("trivial")
 struct SendtoENAMETOOLONGError(CustomError):
     comptime message = "sendto (ENAMETOOLONG): The length of a pathname exceeds PATH_MAX."
+
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
 
 
 @fieldwise_init
@@ -672,11 +1314,23 @@ struct SendtoENAMETOOLONGError(CustomError):
 struct SendtoENETDOWNError(CustomError):
     comptime message = "sendto (ENETDOWN): The local network interface used to reach the destination is down."
 
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
+
 
 @fieldwise_init
 @register_passable("trivial")
 struct SendtoENETUNREACHError(CustomError):
     comptime message = "sendto (ENETUNREACH): No route to the network is present."
+
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
 
 
 @fieldwise_init
@@ -684,11 +1338,23 @@ struct SendtoENETUNREACHError(CustomError):
 struct SendtoENOBUFSError(CustomError):
     comptime message = "sendto (ENOBUFS): Insufficient resources were available in the system to perform the operation."
 
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
+
 
 @fieldwise_init
 @register_passable("trivial")
 struct SendtoENOMEMError(CustomError):
     comptime message = "sendto (ENOMEM): Insufficient memory was available to fulfill the request."
+
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
 
 
 @fieldwise_init
@@ -696,17 +1362,35 @@ struct SendtoENOMEMError(CustomError):
 struct SendtoENOTCONNError(CustomError):
     comptime message = "sendto (ENOTCONN): The socket is not connected."
 
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
+
 
 @fieldwise_init
 @register_passable("trivial")
 struct SendtoENOTSOCKError(CustomError):
     comptime message = "sendto (ENOTSOCK): The file descriptor is not associated with a socket."
 
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
+
 
 @fieldwise_init
 @register_passable("trivial")
 struct SendtoEPIPEError(CustomError):
     comptime message = "sendto (EPIPE): The socket is shut down for writing, or the socket is connection-mode and is no longer connected."
+
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
 
 
 # Setsockopt errors
@@ -715,11 +1399,23 @@ struct SendtoEPIPEError(CustomError):
 struct SetsockoptEBADFError(CustomError):
     comptime message = "setsockopt (EBADF): The argument socket is not a valid descriptor."
 
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
+
 
 @fieldwise_init
 @register_passable("trivial")
 struct SetsockoptEFAULTError(CustomError):
     comptime message = "setsockopt (EFAULT): The argument option_value points outside the process's allocated address space."
+
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
 
 
 @fieldwise_init
@@ -727,17 +1423,35 @@ struct SetsockoptEFAULTError(CustomError):
 struct SetsockoptEINVALError(CustomError):
     comptime message = "setsockopt (EINVAL): The argument option_len is invalid."
 
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
+
 
 @fieldwise_init
 @register_passable("trivial")
 struct SetsockoptENOPROTOOPTError(CustomError):
     comptime message = "setsockopt (ENOPROTOOPT): The option is unknown at the level indicated."
 
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
+
 
 @fieldwise_init
 @register_passable("trivial")
 struct SetsockoptENOTSOCKError(CustomError):
     comptime message = "setsockopt (ENOTSOCK): The argument socket is not a socket."
+
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
 
 
 # Shutdown errors
@@ -746,11 +1460,23 @@ struct SetsockoptENOTSOCKError(CustomError):
 struct ShutdownEBADFError(CustomError):
     comptime message = "shutdown (EBADF): The argument socket is an invalid descriptor."
 
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
+
 
 @fieldwise_init
 @register_passable("trivial")
 struct ShutdownEINVALError(CustomError):
     comptime message = "shutdown (EINVAL): Invalid argument passed."
+
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
 
 
 @fieldwise_init
@@ -758,11 +1484,23 @@ struct ShutdownEINVALError(CustomError):
 struct ShutdownENOTCONNError(CustomError):
     comptime message = "shutdown (ENOTCONN): The socket is not connected."
 
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
+
 
 @fieldwise_init
 @register_passable("trivial")
 struct ShutdownENOTSOCKError(CustomError):
     comptime message = "shutdown (ENOTSOCK): The file descriptor is not associated with a socket."
+
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
 
 
 # Socket errors
@@ -771,11 +1509,23 @@ struct ShutdownENOTSOCKError(CustomError):
 struct SocketEACCESError(CustomError):
     comptime message = "socket (EACCES): Permission to create a socket of the specified type and/or protocol is denied."
 
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
+
 
 @fieldwise_init
 @register_passable("trivial")
 struct SocketEAFNOSUPPORTError(CustomError):
     comptime message = "socket (EAFNOSUPPORT): The implementation does not support the specified address family."
+
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
 
 
 @fieldwise_init
@@ -783,11 +1533,23 @@ struct SocketEAFNOSUPPORTError(CustomError):
 struct SocketEINVALError(CustomError):
     comptime message = "socket (EINVAL): Invalid flags in type, unknown protocol, or protocol family not available."
 
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
+
 
 @fieldwise_init
 @register_passable("trivial")
 struct SocketEMFILEError(CustomError):
     comptime message = "socket (EMFILE): The per-process limit on the number of open file descriptors has been reached."
+
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
 
 
 @fieldwise_init
@@ -795,11 +1557,23 @@ struct SocketEMFILEError(CustomError):
 struct SocketENFILEError(CustomError):
     comptime message = "socket (ENFILE): The system-wide limit on the total number of open files has been reached."
 
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
+
 
 @fieldwise_init
 @register_passable("trivial")
 struct SocketENOBUFSError(CustomError):
     comptime message = "socket (ENOBUFS): Insufficient memory is available. The socket cannot be created until sufficient resources are freed."
+
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
 
 
 @fieldwise_init
@@ -807,11 +1581,16 @@ struct SocketENOBUFSError(CustomError):
 struct SocketEPROTONOSUPPORTError(CustomError):
     comptime message = "socket (EPROTONOSUPPORT): The protocol type or the specified protocol is not supported within this domain."
 
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
+
 
 # ===== VARIANT ERROR TYPES (one per function) =====
 
 
-@fieldwise_init
 struct AcceptError(Movable, Stringable, Writable):
     """Typed error variant for accept() function."""
 
@@ -834,56 +1613,8 @@ struct AcceptError(Movable, Stringable, Writable):
     var value: Self.type
 
     @implicit
-    fn __init__(out self, value: AcceptEBADFError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: AcceptEINTRError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: AcceptEAGAINError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: AcceptECONNABORTEDError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: AcceptEFAULTError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: AcceptEINVALError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: AcceptEMFILEError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: AcceptENFILEError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: AcceptENOBUFSError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: AcceptENOTSOCKError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: AcceptEOPNOTSUPPError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: AcceptEPERMError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: AcceptEPROTOError):
-        self.value = value
+    fn __init__[T: Movable](out self, var value: T):
+        self.value = value^
 
     @implicit
     fn __init__(out self, var value: Error):
@@ -922,14 +1653,12 @@ struct AcceptError(Movable, Stringable, Writable):
     fn isa[T: AnyType](self) -> Bool:
         return self.value.isa[T]()
 
-    fn __getitem__[T: AnyType](self) -> ref [self.value] T:
-        return self.value[T]
-
     fn __str__(self) -> String:
-        return String.write(self)
+        var result = String()
+        self.write_to(result)
+        return result
 
 
-@fieldwise_init
 struct BindError(Movable, Stringable, Writable):
     """Typed error variant for bind() function."""
 
@@ -948,40 +1677,8 @@ struct BindError(Movable, Stringable, Writable):
     var value: Self.type
 
     @implicit
-    fn __init__(out self, value: BindEACCESError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: BindEADDRINUSEError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: BindEBADFError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: BindEFAULTError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: BindEINVALError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: BindELOOPError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: BindENAMETOOLONGError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: BindENOMEMError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: BindENOTSOCKError):
-        self.value = value
+    fn __init__[T: Movable](out self, var value: T):
+        self.value = value^
 
     @implicit
     fn __init__(out self, var value: Error):
@@ -1012,14 +1709,12 @@ struct BindError(Movable, Stringable, Writable):
     fn isa[T: AnyType](self) -> Bool:
         return self.value.isa[T]()
 
-    fn __getitem__[T: AnyType](self) -> ref [self.value] T:
-        return self.value[T]
-
     fn __str__(self) -> String:
-        return String.write(self)
+        var result = String()
+        self.write_to(result)
+        return result
 
 
-@fieldwise_init
 struct CloseError(Movable, Stringable, Writable):
     """Typed error variant for close() function."""
 
@@ -1027,20 +1722,8 @@ struct CloseError(Movable, Stringable, Writable):
     var value: Self.type
 
     @implicit
-    fn __init__(out self, value: CloseEBADFError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: CloseEINTRError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: CloseEIOError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: CloseENOSPCError):
-        self.value = value
+    fn __init__[T: Movable](out self, var value: T):
+        self.value = value^
 
     fn write_to[W: Writer, //](self, mut writer: W):
         if self.value.isa[CloseEBADFError]():
@@ -1055,14 +1738,12 @@ struct CloseError(Movable, Stringable, Writable):
     fn isa[T: AnyType](self) -> Bool:
         return self.value.isa[T]()
 
-    fn __getitem__[T: AnyType](self) -> ref [self.value] T:
-        return self.value[T]
-
     fn __str__(self) -> String:
-        return String.write(self)
+        var result = String()
+        self.write_to(result)
+        return result
 
 
-@fieldwise_init
 struct ConnectError(Movable, Stringable, Writable):
     """Typed error variant for connect() function."""
 
@@ -1086,60 +1767,8 @@ struct ConnectError(Movable, Stringable, Writable):
     var value: Self.type
 
     @implicit
-    fn __init__(out self, value: ConnectEACCESError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: ConnectEADDRINUSEError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: ConnectEAFNOSUPPORTError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: ConnectEAGAINError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: ConnectEALREADYError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: ConnectEBADFError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: ConnectECONNREFUSEDError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: ConnectEFAULTError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: ConnectEINPROGRESSError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: ConnectEINTRError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: ConnectEISCONNError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: ConnectENETUNREACHError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: ConnectENOTSOCKError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: ConnectETIMEDOUTError):
-        self.value = value
+    fn __init__[T: Movable](out self, var value: T):
+        self.value = value^
 
     @implicit
     fn __init__(out self, var value: Error):
@@ -1180,14 +1809,12 @@ struct ConnectError(Movable, Stringable, Writable):
     fn isa[T: AnyType](self) -> Bool:
         return self.value.isa[T]()
 
-    fn __getitem__[T: AnyType](self) -> ref [self.value] T:
-        return self.value[T]
-
     fn __str__(self) -> String:
-        return String.write(self)
+        var result = String()
+        self.write_to(result)
+        return result
 
 
-@fieldwise_init
 struct GetpeernameError(Movable, Stringable, Writable):
     """Typed error variant for getpeername() function."""
 
@@ -1202,28 +1829,8 @@ struct GetpeernameError(Movable, Stringable, Writable):
     var value: Self.type
 
     @implicit
-    fn __init__(out self, value: GetpeernameEBADFError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: GetpeernameEFAULTError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: GetpeernameEINVALError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: GetpeernameENOBUFSError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: GetpeernameENOTCONNError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: GetpeernameENOTSOCKError):
-        self.value = value
+    fn __init__[T: Movable](out self, var value: T):
+        self.value = value^
 
     fn write_to[W: Writer, //](self, mut writer: W):
         if self.value.isa[GetpeernameEBADFError]():
@@ -1242,14 +1849,12 @@ struct GetpeernameError(Movable, Stringable, Writable):
     fn isa[T: AnyType](self) -> Bool:
         return self.value.isa[T]()
 
-    fn __getitem__[T: AnyType](self) -> ref [self.value] T:
-        return self.value[T]
-
     fn __str__(self) -> String:
-        return String.write(self)
+        var result = String()
+        self.write_to(result)
+        return result
 
 
-@fieldwise_init
 struct GetsocknameError(Movable, Stringable, Writable):
     """Typed error variant for getsockname() function."""
 
@@ -1263,24 +1868,8 @@ struct GetsocknameError(Movable, Stringable, Writable):
     var value: Self.type
 
     @implicit
-    fn __init__(out self, value: GetsocknameEBADFError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: GetsocknameEFAULTError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: GetsocknameEINVALError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: GetsocknameENOBUFSError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: GetsocknameENOTSOCKError):
-        self.value = value
+    fn __init__[T: Movable](out self, var value: T):
+        self.value = value^
 
     fn write_to[W: Writer, //](self, mut writer: W):
         if self.value.isa[GetsocknameEBADFError]():
@@ -1297,14 +1886,12 @@ struct GetsocknameError(Movable, Stringable, Writable):
     fn isa[T: AnyType](self) -> Bool:
         return self.value.isa[T]()
 
-    fn __getitem__[T: AnyType](self) -> ref [self.value] T:
-        return self.value[T]
-
     fn __str__(self) -> String:
-        return String.write(self)
+        var result = String()
+        self.write_to(result)
+        return result
 
 
-@fieldwise_init
 struct GetsockoptError(Movable, Stringable, Writable):
     """Typed error variant for getsockopt() function."""
 
@@ -1318,24 +1905,8 @@ struct GetsockoptError(Movable, Stringable, Writable):
     var value: Self.type
 
     @implicit
-    fn __init__(out self, value: GetsockoptEBADFError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: GetsockoptEFAULTError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: GetsockoptEINVALError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: GetsockoptENOPROTOOPTError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: GetsockoptENOTSOCKError):
-        self.value = value
+    fn __init__[T: Movable](out self, var value: T):
+        self.value = value^
 
     fn write_to[W: Writer, //](self, mut writer: W):
         if self.value.isa[GetsockoptEBADFError]():
@@ -1352,14 +1923,12 @@ struct GetsockoptError(Movable, Stringable, Writable):
     fn isa[T: AnyType](self) -> Bool:
         return self.value.isa[T]()
 
-    fn __getitem__[T: AnyType](self) -> ref [self.value] T:
-        return self.value[T]
-
     fn __str__(self) -> String:
-        return String.write(self)
+        var result = String()
+        self.write_to(result)
+        return result
 
 
-@fieldwise_init
 struct ListenError(Movable, Stringable, Writable):
     """Typed error variant for listen() function."""
 
@@ -1367,20 +1936,8 @@ struct ListenError(Movable, Stringable, Writable):
     var value: Self.type
 
     @implicit
-    fn __init__(out self, value: ListenEADDRINUSEError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: ListenEBADFError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: ListenENOTSOCKError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: ListenEOPNOTSUPPError):
-        self.value = value
+    fn __init__[T: Movable](out self, var value: T):
+        self.value = value^
 
     fn write_to[W: Writer, //](self, mut writer: W):
         if self.value.isa[ListenEADDRINUSEError]():
@@ -1395,14 +1952,12 @@ struct ListenError(Movable, Stringable, Writable):
     fn isa[T: AnyType](self) -> Bool:
         return self.value.isa[T]()
 
-    fn __getitem__[T: AnyType](self) -> ref [self.value] T:
-        return self.value[T]
-
     fn __str__(self) -> String:
-        return String.write(self)
+        var result = String()
+        self.write_to(result)
+        return result
 
 
-@fieldwise_init
 struct RecvError(Movable, Stringable, Writable):
     """Typed error variant for recv() function."""
 
@@ -1419,32 +1974,8 @@ struct RecvError(Movable, Stringable, Writable):
     var value: Self.type
 
     @implicit
-    fn __init__(out self, value: RecvEAGAINError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: RecvEBADFError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: RecvECONNREFUSEDError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: RecvEFAULTError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: RecvEINTRError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: RecvENOTCONNError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: RecvENOTSOCKError):
-        self.value = value
+    fn __init__[T: Movable](out self, var value: T):
+        self.value = value^
 
     @implicit
     fn __init__(out self, var value: Error):
@@ -1471,14 +2002,12 @@ struct RecvError(Movable, Stringable, Writable):
     fn isa[T: AnyType](self) -> Bool:
         return self.value.isa[T]()
 
-    fn __getitem__[T: AnyType](self) -> ref [self.value] T:
-        return self.value[T]
-
     fn __str__(self) -> String:
-        return String.write(self)
+        var result = String()
+        self.write_to(result)
+        return result
 
 
-@fieldwise_init
 struct RecvfromError(Movable, Stringable, Writable):
     """Typed error variant for recvfrom() function."""
 
@@ -1500,52 +2029,8 @@ struct RecvfromError(Movable, Stringable, Writable):
     var value: Self.type
 
     @implicit
-    fn __init__(out self, value: RecvfromEAGAINError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: RecvfromEBADFError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: RecvfromECONNRESETError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: RecvfromEINTRError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: RecvfromEINVALError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: RecvfromEIOError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: RecvfromENOBUFSError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: RecvfromENOMEMError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: RecvfromENOTCONNError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: RecvfromENOTSOCKError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: RecvfromEOPNOTSUPPError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: RecvfromETIMEDOUTError):
-        self.value = value
+    fn __init__[T: Movable](out self, var value: T):
+        self.value = value^
 
     @implicit
     fn __init__(out self, var value: Error):
@@ -1582,14 +2067,12 @@ struct RecvfromError(Movable, Stringable, Writable):
     fn isa[T: AnyType](self) -> Bool:
         return self.value.isa[T]()
 
-    fn __getitem__[T: AnyType](self) -> ref [self.value] T:
-        return self.value[T]
-
     fn __str__(self) -> String:
-        return String.write(self)
+        var result = String()
+        self.write_to(result)
+        return result
 
 
-@fieldwise_init
 struct SendError(Movable, Stringable, Writable):
     """Typed error variant for send() function."""
 
@@ -1613,60 +2096,8 @@ struct SendError(Movable, Stringable, Writable):
     var value: Self.type
 
     @implicit
-    fn __init__(out self, value: SendEAGAINError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: SendEBADFError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: SendECONNREFUSEDError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: SendECONNRESETError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: SendEDESTADDRREQError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: SendEFAULTError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: SendEINTRError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: SendEINVALError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: SendEISCONNError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: SendENOBUFSError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: SendENOMEMError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: SendENOTCONNError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: SendENOTSOCKError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: SendEOPNOTSUPPError):
-        self.value = value
+    fn __init__[T: Movable](out self, var value: T):
+        self.value = value^
 
     @implicit
     fn __init__(out self, var value: Error):
@@ -1707,14 +2138,12 @@ struct SendError(Movable, Stringable, Writable):
     fn isa[T: AnyType](self) -> Bool:
         return self.value.isa[T]()
 
-    fn __getitem__[T: AnyType](self) -> ref [self.value] T:
-        return self.value[T]
-
     fn __str__(self) -> String:
-        return String.write(self)
+        var result = String()
+        self.write_to(result)
+        return result
 
 
-@fieldwise_init
 struct SendtoError(Movable, Stringable, Writable):
     """Typed error variant for sendto() function."""
 
@@ -1745,88 +2174,8 @@ struct SendtoError(Movable, Stringable, Writable):
     var value: Self.type
 
     @implicit
-    fn __init__(out self, value: SendtoEACCESError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: SendtoEAFNOSUPPORTError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: SendtoEAGAINError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: SendtoEBADFError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: SendtoECONNRESETError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: SendtoEDESTADDRREQError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: SendtoEHOSTUNREACHError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: SendtoEINTRError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: SendtoEINVALError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: SendtoEIOError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: SendtoEISCONNError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: SendtoELOOPError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: SendtoEMSGSIZEError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: SendtoENAMETOOLONGError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: SendtoENETDOWNError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: SendtoENETUNREACHError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: SendtoENOBUFSError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: SendtoENOMEMError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: SendtoENOTCONNError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: SendtoENOTSOCKError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: SendtoEPIPEError):
-        self.value = value
+    fn __init__[T: Movable](out self, var value: T):
+        self.value = value^
 
     @implicit
     fn __init__(out self, var value: Error):
@@ -1881,14 +2230,12 @@ struct SendtoError(Movable, Stringable, Writable):
     fn isa[T: AnyType](self) -> Bool:
         return self.value.isa[T]()
 
-    fn __getitem__[T: AnyType](self) -> ref [self.value] T:
-        return self.value[T]
-
     fn __str__(self) -> String:
-        return String.write(self)
+        var result = String()
+        self.write_to(result)
+        return result
 
 
-@fieldwise_init
 struct SetsockoptError(Movable, Stringable, Writable):
     """Typed error variant for setsockopt() function."""
 
@@ -1903,24 +2250,8 @@ struct SetsockoptError(Movable, Stringable, Writable):
     var value: Self.type
 
     @implicit
-    fn __init__(out self, value: SetsockoptEBADFError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: SetsockoptEFAULTError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: SetsockoptEINVALError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: SetsockoptENOPROTOOPTError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: SetsockoptENOTSOCKError):
-        self.value = value
+    fn __init__[T: Movable](out self, var value: T):
+        self.value = value^
 
     @implicit
     fn __init__(out self, var value: Error):
@@ -1943,14 +2274,12 @@ struct SetsockoptError(Movable, Stringable, Writable):
     fn isa[T: AnyType](self) -> Bool:
         return self.value.isa[T]()
 
-    fn __getitem__[T: AnyType](self) -> ref [self.value] T:
-        return self.value[T]
-
     fn __str__(self) -> String:
-        return String.write(self)
+        var result = String()
+        self.write_to(result)
+        return result
 
 
-@fieldwise_init
 struct ShutdownError(Movable, Stringable, Writable):
     """Typed error variant for shutdown() function."""
 
@@ -1958,20 +2287,8 @@ struct ShutdownError(Movable, Stringable, Writable):
     var value: Self.type
 
     @implicit
-    fn __init__(out self, value: ShutdownEBADFError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: ShutdownEINVALError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: ShutdownENOTCONNError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: ShutdownENOTSOCKError):
-        self.value = value
+    fn __init__[T: Movable](out self, var value: T):
+        self.value = value^
 
     fn write_to[W: Writer, //](self, mut writer: W):
         if self.value.isa[ShutdownEBADFError]():
@@ -1986,14 +2303,12 @@ struct ShutdownError(Movable, Stringable, Writable):
     fn isa[T: AnyType](self) -> Bool:
         return self.value.isa[T]()
 
-    fn __getitem__[T: AnyType](self) -> ref [self.value] T:
-        return self.value[T]
-
     fn __str__(self) -> String:
-        return String.write(self)
+        var result = String()
+        self.write_to(result)
+        return result
 
 
-@fieldwise_init
 struct SocketError(Movable, Stringable, Writable):
     """Typed error variant for socket() function."""
 
@@ -2010,32 +2325,8 @@ struct SocketError(Movable, Stringable, Writable):
     var value: Self.type
 
     @implicit
-    fn __init__(out self, value: SocketEACCESError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: SocketEAFNOSUPPORTError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: SocketEINVALError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: SocketEMFILEError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: SocketENFILEError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: SocketENOBUFSError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: SocketEPROTONOSUPPORTError):
-        self.value = value
+    fn __init__[T: Movable](out self, var value: T):
+        self.value = value^
 
     @implicit
     fn __init__(out self, var value: Error):
@@ -2062,8 +2353,7 @@ struct SocketError(Movable, Stringable, Writable):
     fn isa[T: AnyType](self) -> Bool:
         return self.value.isa[T]()
 
-    fn __getitem__[T: AnyType](self) -> ref [self.value] T:
-        return self.value[T]
-
     fn __str__(self) -> String:
-        return String.write(self)
+        var result = String()
+        self.write_to(result)
+        return result

@@ -16,11 +16,23 @@ from utils import StaticTuple, Variant
 struct InetNtopEAFNOSUPPORTError(CustomError):
     comptime message = "inet_ntop Error (EAFNOSUPPORT): `*src` was not an `AF_INET` or `AF_INET6` family address."
 
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
+
 
 @fieldwise_init
 @register_passable("trivial")
 struct InetNtopENOSPCError(CustomError):
     comptime message = "inet_ntop Error (ENOSPC): The buffer size was not large enough to store the presentation form of the address."
+
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
 
 
 @fieldwise_init
@@ -28,11 +40,16 @@ struct InetNtopENOSPCError(CustomError):
 struct InetPtonInvalidAddressError(CustomError):
     comptime message = "inet_pton Error: The input is not a valid address."
 
+    fn __str__(self) -> String:
+        return String(Self.message)
+
+    fn write_to[W: Writer, //](self, mut writer: W):
+        writer.write(Self.message)
+
 
 # ===== VARIANT ERROR TYPES =====
 
 
-@fieldwise_init
 struct InetNtopError(Movable, Stringable, Writable):
     """Typed error variant for inet_ntop() function."""
 
@@ -40,12 +57,8 @@ struct InetNtopError(Movable, Stringable, Writable):
     var value: Self.type
 
     @implicit
-    fn __init__(out self, value: InetNtopEAFNOSUPPORTError):
-        self.value = value
-
-    @implicit
-    fn __init__(out self, value: InetNtopENOSPCError):
-        self.value = value
+    fn __init__[T: Movable](out self, var value: T):
+        self.value = value^
 
     @implicit
     fn __init__(out self, var value: Error):
@@ -62,14 +75,12 @@ struct InetNtopError(Movable, Stringable, Writable):
     fn isa[T: AnyType](self) -> Bool:
         return self.value.isa[T]()
 
-    fn __getitem__[T: AnyType](self) -> ref [self.value] T:
-        return self.value[T]
-
     fn __str__(self) -> String:
-        return String.write(self)
+        var result = String()
+        self.write_to(result)
+        return result
 
 
-@fieldwise_init
 struct InetPtonError(Movable, Stringable, Writable):
     """Typed error variant for inet_pton() function."""
 
@@ -93,11 +104,10 @@ struct InetPtonError(Movable, Stringable, Writable):
     fn isa[T: AnyType](self) -> Bool:
         return self.value.isa[T]()
 
-    fn __getitem__[T: AnyType](self) -> ref [self.value] T:
-        return self.value[T]
-
     fn __str__(self) -> String:
-        return String.write(self)
+        var result = String()
+        self.write_to(result)
+        return result
 
 
 fn htonl(hostlong: c_uint) -> c_uint:

@@ -169,7 +169,7 @@ struct AsyncRuntime:
         var nev: c_int
         try:
             puts("  [Runtime] Calling kevent...")
-            nev = kevent(self.kq, UnsafePointer[Kevent, origin=ImmutOrigin.external](), 0, events, c_int(self.max_tasks), rebind[UnsafePointer[Timespec, origin=ImmutOrigin.external]](timeout))
+            nev = kevent(self.kq, UnsafePointer[Kevent, origin=ImmutExternalOrigin](), 0, events, c_int(self.max_tasks), rebind[UnsafePointer[Timespec, origin=ImmutExternalOrigin]](timeout))
             puts("  [Runtime] kevent returned " + String(nev) + " events")
         except:
             puts("kevent failed in run_once")
